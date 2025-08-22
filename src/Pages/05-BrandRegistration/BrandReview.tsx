@@ -58,37 +58,42 @@ interface Props {
 }
 
 const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep }) => {
+  console.log("Full brandReviewData:", brandReviewData);
+  console.log("Status object:", brandReviewData?.brandApplicationStatus);
+  console.log(
+    "Status name:",
+    brandReviewData?.brandApplicationStatus?.statusName
+  );
 
   const statusConfig: Record<
-  number,
-  { label: string; className: string; rightLabel: string; icon: any }
-> = {
-  1: {
-    label: "Pending Review",
-    className: "bg-yellow-400 text-black",
-    rightLabel: "Estimated Processing Time",
-    icon: <ClockIcon size={18} weight="fill" />,
-  },
-  2: {
-    label: "Rejected",
-    className: "bg-red-500 text-white",
-    rightLabel: "Last updated:",
-    icon: <XCircleIcon size={18} weight="fill" />,
-  },
-  3: {
-    label: "Approved",
-    className: "bg-green-500 text-white",
-    rightLabel: "Last updated:",
-    icon: <CheckCircleIcon size={18} weight="fill" />,
-  },
-  0: {
-    label: "Unknown Status",
-    className: "bg-gray-400 text-white",
-    rightLabel: "N/A",
-    icon: <InfoIcon size={18} weight="fill" />,
-  },
-};
-
+    number,
+    { label: string; className: string; rightLabel: string; icon: any }
+  > = {
+    1: {
+      label: "Pending Review",
+      className: "bg-yellow-400 text-black",
+      rightLabel: "Estimated Processing Time",
+      icon: <ClockIcon size={18} weight="fill" />,
+    },
+    2: {
+      label: "Rejected",
+      className: "bg-red-500 text-white",
+      rightLabel: "Last updated:",
+      icon: <XCircleIcon size={18} weight="fill" />,
+    },
+    3: {
+      label: "Approved",
+      className: "bg-green-500 text-white",
+      rightLabel: "Last updated:",
+      icon: <CheckCircleIcon size={18} weight="fill" />,
+    },
+    0: {
+      label: "Unknown Status",
+      className: "bg-gray-400 text-white",
+      rightLabel: "N/A",
+      icon: <InfoIcon size={18} weight="fill" />,
+    },
+  };
 
   const status = brandReviewData.brandApplicationStatus.status;
   const config = statusConfig[status] || statusConfig[0];
@@ -288,7 +293,10 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep }) => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mt-4" hidden={status === 3}>
+        <div
+          className="flex flex-col md:flex-row gap-4 mt-4"
+          hidden={status === 3}
+        >
           <Button
             rounded
             style={{ background: "black", color: "white", border: "none" }}
@@ -296,7 +304,10 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep }) => {
           >
             {status === 2 ? "Resubmit Application" : "Edit Application"}
           </Button>
-          <Button rounded style={{ background: "white", border: "1px solid black" }}>
+          <Button
+            rounded
+            style={{ background: "white", border: "1px solid black" }}
+          >
             <span role="img" aria-label="support">
               🎧
             </span>
