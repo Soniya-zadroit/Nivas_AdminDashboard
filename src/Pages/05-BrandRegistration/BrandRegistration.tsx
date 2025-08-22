@@ -11,7 +11,7 @@ const BrandRegistration: React.FC = () => {
   let brandReviewData: BrandReviewData = {
     brandApplicationStatus: {
       status: 3,
-      statusName: "",
+      statusName: "Approved",
       applicationId: "BR-2025-1001",
       submitDate: "10 Aug,2025",
       processTime: "3-5 Business Days",
