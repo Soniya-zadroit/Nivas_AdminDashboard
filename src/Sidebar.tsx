@@ -7,6 +7,9 @@ import {
   UserIcon,
 } from "@phosphor-icons/react";
 import { useStepperContext } from "./Pages/05-BrandRegistration/StepperHandler/StepperProvider";
+import { MdOutlineMailOutline } from "react-icons/md";
+import { FiPhone } from "react-icons/fi";
+import { RiGlobalLine } from "react-icons/ri";
 
 export const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -113,6 +116,27 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
       )}
+      <div className="mt-4 flex flex-col gap-2 mb-5 px-4 py-2">
+        <p className="text-[17px] font-semibold ">Contact us:</p>
+        <p className="flex items-center gap-2 text-[14px]">
+          <span>
+            <MdOutlineMailOutline />
+          </span>
+          <span  >loremipsum@gmail.com</span>
+        </p>
+        <p className="flex items-center gap-2 text-[14px]">
+          <span>
+            <FiPhone />
+          </span>
+          <span>+91 9797 787 989</span>
+        </p>
+        <p className="flex items-center gap-2 text-[14px]">
+          <span>
+            <RiGlobalLine />
+          </span>
+          <span>www.nivasic.com</span>
+        </p>
+      </div>
     </div>
   );
 };
