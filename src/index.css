@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+@import url("https://fonts.cdnfonts.com/css/agraham");
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.agraham {
+  font-family: "Agraham", serif;
+}
+
+.poppins {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar {
+  width: 6px; /* thin width */
+  height: 6px; /* for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* or use #111 for dark mode */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4); /* scrollbar color */
+  border-radius: 9999px; /* rounded */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+@font-face {
+  font-family: "Agraham";
+  src: url("./assets/fonts/Agraham.otf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@import "tailwindcss";
+
+:root {
+  background-color: #f8f8f8;
+  --font-color: #171717;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  line-height: 120%;
+  color: var(--font-color);
+}
+
+/* Headings */
+.prose h1 {
+  @apply text-4xl font-semibold leading-tight;
+}
+
+.prose h2 {
+  @apply text-3xl font-semibold leading-snug;
+}
+
+.prose h3 {
+  @apply text-2xl font-semibold leading-snug;
+}
+
+.prose h4 {
+  @apply text-xl font-medium leading-snug;
+}
+
+.prose h5 {
+  @apply text-lg font-medium;
+}
+
+.prose h6 {
+  @apply text-base font-medium;
+}
+
+/* Paragraph */
+.prose p {
+  @apply text-base leading-relaxed;
+}
+
+/* Small text */
+.prose small {
+  @apply text-sm;
+}
+
+.p-inputtext {
+  @apply rounded-lg
+}
+
+
+/* Hide scrollbar for Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for IE/Edge */
+html {
+  -ms-overflow-style: none;
+}
