@@ -15,7 +15,7 @@ const Company: React.FC = () => {
       <div className="absolute inset-0 bg-opacity-30 flex items-center justify-end px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 lg:pt-30">
         <div className="align-middle text-center max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-2xl">
           <h2
-            className="font-agraham text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-5xl text-black "
+            className="font-agraham text-xl sm:text-2xl md:text-3xl lg:text-2xl xl:text-5xl text-black "
             style={{ fontFamily: "Agraham" }}
           >
             We Are Creating a

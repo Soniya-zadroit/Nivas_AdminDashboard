@@ -55,9 +55,10 @@ export interface BrandReviewData {
 interface Props {
   brandReviewData: BrandReviewData;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+  activeStep?: number; // Add activeStep prop to determine which step we're on
 }
 
-const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep }) => {
+const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep, activeStep = 2 }) => {
   console.log("Full brandReviewData:", brandReviewData);
   console.log("Status object:", brandReviewData?.brandApplicationStatus);
   console.log(
@@ -97,6 +98,9 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep }) => {
 
   const status = brandReviewData.brandApplicationStatus.status;
   const config = statusConfig[status] || statusConfig[0];
+
+  // Only show documents in step 2 (edit application), hide in step 3
+  const shouldShowDocuments = activeStep === 2 && brandReviewData.document.showDocument;
 
   return (
     <div className="space-y-8">
@@ -207,8 +211,8 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep }) => {
         </div>
       </div>
 
-      {/* Submitted Documents */}
-      {brandReviewData.document.showDocument && (
+      {/* Submitted Documents - Only show in step 2 */}
+      {shouldShowDocuments && (
         <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Submitted Documents</h3>

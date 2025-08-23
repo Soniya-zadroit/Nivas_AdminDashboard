@@ -48,8 +48,12 @@ const BrandRegistration: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       <div className="">
-        <h1 className="font-bold text-2xl font-poppins mb-4">{stepContent[activeStep - 1].title}</h1>
-        <p className="text-gray-600 sm">{stepContent[activeStep - 1].description}</p>
+        <h1 className="font-bold text-2xl font-poppins mb-4">
+          {stepContent[activeStep - 1].title}
+        </h1>
+        <p className="text-gray-600 sm">
+          {stepContent[activeStep - 1].description}
+        </p>
       </div>
       <div className="w-full">
         <CustomStepper
@@ -67,6 +71,7 @@ const BrandRegistration: React.FC = () => {
         <BrandReview
           brandReviewData={brandReviewData}
           setActiveStep={setActiveStep}
+          activeStep={activeStep}
         />
       )}
     </div>

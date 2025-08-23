@@ -10,6 +10,7 @@ import { useStepperContext } from "./Pages/05-BrandRegistration/StepperHandler/S
 import { MdOutlineMailOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
 import { RiGlobalLine } from "react-icons/ri";
+import { LuBriefcase } from "react-icons/lu";
 
 export const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -39,10 +40,10 @@ export const Sidebar: React.FC = () => {
     {
       label: "Company",
       path: "/com",
-      icon: <BriefcaseIcon />,
+      icon: <LuBriefcase />,
     },
     {
-      label: "Terms And Conditions",
+      label: "Terms And conditions",
       path: "/terms",
       icon: <ShieldCheckIcon />,
     },
@@ -89,7 +90,7 @@ export const Sidebar: React.FC = () => {
                 }
               `}
               >
-                {item.icon}
+                <span className="text-2xl">{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
             );
