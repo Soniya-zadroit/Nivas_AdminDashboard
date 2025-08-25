@@ -46,7 +46,7 @@ const BrandRegistration: React.FC = () => {
   }, [setActiveStep]);
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 poppins">
       <div className="">
         <h1 className="font-bold text-2xl font-poppins mb-4">
           {stepContent[activeStep - 1].title}

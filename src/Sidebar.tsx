@@ -123,7 +123,7 @@ export const Sidebar: React.FC = () => {
           <span>
             <MdOutlineMailOutline />
           </span>
-          <span  >loremipsum@gmail.com</span>
+          <span>loremipsum@gmail.com</span>
         </p>
         <p className="flex items-center gap-2 text-[14px]">
           <span>

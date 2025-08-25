@@ -38,8 +38,11 @@ const Home: React.FC = () => {
 
               {/* Subtitle */}
               <p className="flex flex-col gap-3  mt-4 sm:mt-6 text-[clamp(1.2rem,1.3vw,1.2rem)] text-black max-w-[70%] sm:max-w-md md:max-w-lg lg:max-w-[40%] font-400  font-poppins">
-                <p> Join an exclusive marketplace where your </p>
-                <p>brand takes center stage.</p>
+                <p className="poppins">
+                  {" "}
+                  Join an exclusive marketplace where your{" "}
+                </p>
+                <p className="poppins">brand takes center stage.</p>
               </p>
 
               {/* Button */}
@@ -50,7 +53,7 @@ const Home: React.FC = () => {
     w-[70%] sm:w-[40%] md:w-[50%] lg:w-[23%]
     bg-[#e4b21a] text-white font-semibold rounded-full 
     shadow-lg hover:bg-[#d6a518] transition 
-    text-sm sm:text-base
+    text-sm sm:text-base poppins
   "
                 onClick={() => {
                   navigate("/brandregistration");

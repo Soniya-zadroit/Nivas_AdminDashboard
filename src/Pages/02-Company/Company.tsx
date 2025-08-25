@@ -20,7 +20,7 @@ const Company: React.FC = () => {
           >
             We Are Creating a
           </h2>
-          <h1 className=" flex flex-col gap-2  text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-black font-semibold font-poppins mt-2 sm:mt-3 lg:mt-7 md:mt-4">
+          <h1 className="poppins flex flex-col gap-2  text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-black font-semibold font-poppins mt-2 sm:mt-3 lg:mt-7 md:mt-4">
             <p>Celebrity</p>
             <p> To Consumer</p>
             <p>Exclusive</p>

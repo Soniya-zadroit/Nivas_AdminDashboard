@@ -48,7 +48,7 @@ interface FaqModalProps {
   onContactClick?: () => void; // 👈 new
 }
 
-const Faq: React.FC<FaqModalProps> = ({ isOpen, onClose,onContactClick }) => {
+const Faq: React.FC<FaqModalProps> = ({ isOpen, onClose, onContactClick }) => {
   const navigate = useNavigate();
   const [openItems, setOpenItems] = useState<number[]>([]);
   const contentRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
@@ -63,7 +63,7 @@ const Faq: React.FC<FaqModalProps> = ({ isOpen, onClose,onContactClick }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50"
+      className="fixed poppins inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50"
       onClick={onClose}
     >
       <div

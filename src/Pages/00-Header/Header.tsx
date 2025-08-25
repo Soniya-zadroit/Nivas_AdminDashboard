@@ -50,7 +50,7 @@ const Header: React.FC = () => {
             </Link>
           </div>
 
-          <div className="hidden md:flex space-x-8 text-white">
+          <div className="hidden md:flex space-x-8 poppins text-white">
             <Link
               to="/company"
               className={`hover:text-black ${
