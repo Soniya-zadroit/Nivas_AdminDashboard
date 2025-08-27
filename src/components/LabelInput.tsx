@@ -6,15 +6,23 @@ import { InputTextarea } from "primereact/inputtextarea";
 
 interface LabelInputProps {
   label: string;
-  type?: "text" | "number" | "password" | "textarea" | "email" | "tel";
+  type?:
+    | "text"
+    | "number"
+    | "password"
+    | "textarea"
+    | "email"
+    | "tel"
+    | "value";
   placeholder?: string;
   required?: boolean;
-  pattern?: string; 
+  pattern?: string;
   value: any;
   onChange: (value: any) => void;
   name?: string;
   rows?: number; // for textarea
   error?: string; // 👈 added
+  maxLength?: number; // 👈 added
 }
 
 const LabelInput: React.FC<LabelInputProps> = ({
@@ -26,6 +34,7 @@ const LabelInput: React.FC<LabelInputProps> = ({
   value,
   onChange,
   name,
+  maxLength,
   rows = 3,
   error,
 }) => {
@@ -40,12 +49,20 @@ const LabelInput: React.FC<LabelInputProps> = ({
 
       {/* Input Components */}
       {type === "number" ? (
-        <InputNumber
+        <InputText
           name={name}
           value={value}
-          onValueChange={(e) => onChange(e.value)}
+          type="text" // use text to control length
+          maxLength={maxLength} // restrict length
           placeholder={placeholder}
           className={`w-full !rounded-lg ${errorStyle}`}
+          onChange={(e) => {
+            // Only allow numbers
+            let val = e.target.value.replace(/\D/g, "");
+            // Enforce maxLength
+            if (maxLength) val = val.slice(0, maxLength);
+            onChange(val);
+          }}
         />
       ) : type === "password" ? (
         <Password
@@ -69,12 +86,22 @@ const LabelInput: React.FC<LabelInputProps> = ({
         />
       ) : (
         <InputText
-          type={type}
+          type="text"
           name={name}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            let val = e.target.value.toUpperCase(); // GSTIN/CIN are usually uppercase
+            if (label === "GSTIN") {
+              // Allow only 15 alphanumeric characters
+              val = val.replace(/[^A-Z0-9]/g, "").slice(0, 15);
+            } else if (label === "CIN") {
+              // Allow only 21 alphanumeric characters
+              val = val.replace(/[^A-Z0-9]/g, "").slice(0, 21);
+            }
+            onChange(val);
+          }}
           placeholder={placeholder}
-          pattern={pattern}
+          maxLength={label === "GSTIN" ? 15 : label === "CIN" ? 21 : undefined}
           className={`w-full !rounded-lg ${errorStyle}`}
         />
       )}

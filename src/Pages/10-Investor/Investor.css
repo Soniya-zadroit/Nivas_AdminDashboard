@@ -1,0 +1,48 @@
+/* Investor.css */
+
+/* basic input/textarea look (you can keep width classes in JSX if you prefer) */
+.floating-input,
+.floating-textarea {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #bfbfbf;
+  color: #bfbfbf;
+  padding: 0.5rem 0;
+  outline: none;
+  caret-color: #ffb300;
+  font-size: 1rem; /* adjust if needed */
+}
+
+/* hide placeholder visually but keep it for :placeholder-shown detection */
+.floating-input::placeholder,
+.floating-textarea::placeholder {
+  color: transparent;
+}
+
+/* label base */
+.floating-label {
+  position: absolute;
+  left: 0;
+  top: 0.5rem;               /* initial position (same as your previous top-2) */
+  color: #bfbfbf;
+  font-size: 0.875rem;      /* text-sm */
+  transition: all 0.18s ease;
+  pointer-events: none;     /* lets clicks pass to the input */
+}
+
+/* When input/textarea is focused OR has content, float the label */
+.floating-input:focus + .floating-label,
+.floating-input:not(:placeholder-shown) + .floating-label,
+.floating-textarea:focus + .floating-label,
+.floating-textarea:not(:placeholder-shown) + .floating-label {
+  top: -0.75rem;            /* floated position (similar to -top-3) */
+  font-size: 0.75rem;       /* xs */
+  color: #bfbfbf;
+}
+
+/* change border color on focus like your Tailwind focus:border-[#ffb300] */
+.floating-input:focus,
+.floating-textarea:focus {
+  border-bottom-color: #ffb300;
+}

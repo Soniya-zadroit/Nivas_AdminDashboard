@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 import React, { useRef, useState } from "react";
-import imageSvg from "../assets/Icons/File.png";
+import imageSvg from "../assets/Icons/Image.png";
 
 interface DragAndDropUploadBoxProps {
   label?: string;
@@ -8,7 +8,7 @@ interface DragAndDropUploadBoxProps {
   required?: boolean;
 }
 
-const DropzoneUpload: React.FC<DragAndDropUploadBoxProps> = ({
+const DropImage: React.FC<DragAndDropUploadBoxProps> = ({
   label,
   accept,
   required = false,
@@ -57,8 +57,8 @@ const DropzoneUpload: React.FC<DragAndDropUploadBoxProps> = ({
           </div>
 
           {!selectedFile ? (
-            <p className="text-[10px] text-gray-700 ">
-             Upload a scanned copy of your {label}
+            <p className="text-sm text-gray-700 ">
+              Drop your logo here or click to browse
             </p>
           ) : (
             <p className="text-sm text-gray-700 font-medium truncate max-w-[200px]">
@@ -95,4 +95,4 @@ const DropzoneUpload: React.FC<DragAndDropUploadBoxProps> = ({
   );
 };
 
-export default DropzoneUpload;
+export default DropImage;

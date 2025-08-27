@@ -37,8 +37,10 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link
               to="/"
-              onClick={() => {
-                setActiveTab(""); // reset active when clicking logo
+              onClick={(e) => {
+                e.preventDefault(); // prevent full reload
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setActiveTab("");
                 closeMobileMenu();
               }}
             >
@@ -51,8 +53,8 @@ const Header: React.FC = () => {
           </div>
 
           <div className="hidden md:flex space-x-8 poppins text-white">
-            <Link
-              to="/company"
+            <a
+              href="#company"
               className={`hover:text-black ${
                 activeTab === "company" ? "text-black font-semibold" : ""
               }`}
@@ -62,7 +64,7 @@ const Header: React.FC = () => {
               }}
             >
               Company
-            </Link>
+            </a>
 
             <button
               onClick={handleContactClick}
@@ -104,8 +106,8 @@ const Header: React.FC = () => {
           >
             ✕
           </button>
-          <Link
-            to="/company"
+          <a
+            href="#company"
             className={`hover:text-gray-300 pt-8 ${
               activeTab === "company" ? "text-black font-semibold" : ""
             }`}
@@ -115,7 +117,7 @@ const Header: React.FC = () => {
             }}
           >
             Company
-          </Link>
+          </a>
 
           <button
             onClick={handleContactClick}

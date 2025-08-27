@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import LabelInput from "../../../components/LabelInput";
 import LabelSelect from "../../../components/LabelSelect";
 import type { BrandRegistrationInterface } from "./Registration";
@@ -6,7 +6,6 @@ import { RadioButton } from "primereact/radiobutton";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { MissingInfoAlertMessage } from "../BrandRegistration";
 
-// Matches your interface: wareHouseInfo with fields below
 type WareHouseValue = BrandRegistrationInterface["wareHouseInfo"];
 
 interface WareHouseInformationProps {
@@ -17,38 +16,54 @@ interface WareHouseInformationProps {
   errors?: Partial<Record<keyof WareHouseValue, string>>;
 }
 
-const WareHouseInformation: React.FC<WareHouseInformationProps> = ({ value, onChange, showValidate,
-  validateStatus, errors}) => {
+const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
+  value,
+  onChange,
+  showValidate,
+  validateStatus,
+  errors,
+}) => {
+  const warehouseRef = useRef<HTMLDivElement>(null);
+
   const handleToggle = (hasWarehouse: boolean) => {
     onChange({ wareHouse: hasWarehouse });
-    // Optionally clear fields when toggled to "No"
+
+    // Clear fields when toggled to "No"
     if (!hasWarehouse) {
       onChange({
         wareHouseAddress: "",
         wareHouseCity: "",
         wareHouseDistrict: "",
         wareHouseZipCode: "",
-        wareHouseState: ""
+        wareHouseState: "",
       });
     }
   };
 
+  // Scroll when warehouse section becomes visible
+  useEffect(() => {
+    if (value.wareHouse && warehouseRef.current) {
+      warehouseRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [value.wareHouse]);
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
-
+      {/* Header */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Warehouse Information</h3>
         {showValidate &&
           (validateStatus ? (
-              <CheckCircleIcon
-                weight="fill"
-                className="text-green-500 w-5 h-5"
-              />
+            <CheckCircleIcon weight="fill" className="text-green-500 w-5 h-5" />
           ) : (
-              <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
+            <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
           ))}
       </div>
 
+      {/* Radio buttons */}
       <div className="space-y-2">
         <p className="text-sm text-gray-600">
           Is there a warehouse owned or managed by your brand?
@@ -74,8 +89,9 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({ value, onCh
         </div>
       </div>
 
+      {/* Warehouse fields */}
       {value.wareHouse && (
-        <div className="space-y-4">
+        <div className="space-y-4" ref={warehouseRef}>
           {/* Address + City/Town */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <LabelInput
@@ -117,6 +133,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({ value, onCh
               value={value.wareHouseZipCode}
               onChange={(val: string) => onChange({ wareHouseZipCode: val })}
               error={errors?.wareHouseZipCode}
+              maxLength={6} // limit to 6 digits
             />
           </div>
 
@@ -139,7 +156,6 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({ value, onCh
                 { label: "Rajasthan", value: "Rajasthan" },
                 { label: "Tamil Nadu", value: "Tamil Nadu" },
                 { label: "Telangana", value: "Telangana" },
-                // ...extend with full list as needed
               ]}
               error={errors?.wareHouseState}
             />
@@ -147,11 +163,12 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({ value, onCh
         </div>
       )}
 
+      {/* Missing info alert */}
       {showValidate && !validateStatus && (
-              <div className="w-fit">
-                <MissingInfoAlertMessage />
-              </div>
-            )}
+        <div className="w-fit">
+          <MissingInfoAlertMessage />
+        </div>
+      )}
     </div>
   );
 };

@@ -6,6 +6,53 @@
 body {
   font-family: "Poppins", sans-serif;
 }
+html {
+  scroll-behavior: auto !important;
+}
+/* index.css or App.css */
+
+/* For Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar but allow scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+/* Hide scrollbar but keep scroll */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+
+
+/* For Firefox */
+html {
+  scrollbar-width: none; /* hide scrollbar */
+}
+
+/* For IE & old Edge */
+body {
+  -ms-overflow-style: none; /* hide scrollbar */
+}
+/* index.css */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari */
+}
 
 .agraham {
   font-family: "Agraham", serif;
@@ -13,6 +60,9 @@ body {
 
 .poppins {
   font-family: "Poppins", sans-serif;
+}
+html {
+  scroll-behavior: smooth;
 }
 
 /* Thin scrollbar */

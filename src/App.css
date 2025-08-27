@@ -5,6 +5,15 @@ html {
 ::-webkit-scrollbar {
   display: none;
 }
+.p-dialog .p-dialog-content {
+  overflow: hidden !important; /* hide scrollbars */
+}
+/* Hide any dialog content scrollbars */
+.p-dialog .p-dialog-content { overflow: hidden !important; padding: 0 !important; }
+/* Hide scrollbars in the iframe container (not inside the PDF itself) */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 
 /* Hide scrollbar for IE, Edge, and Firefox */
 html, body {
@@ -19,3 +28,22 @@ html, body {
   -ms-overflow-style: none; /* IE/Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* Custom dialog style */
+.custom-dialog .p-dialog-header {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding: 1rem;
+}
+
+.custom-dialog .p-dialog-content {
+  background: #fff;
+  padding: 0;
+}
+
+.custom-dialog .p-dialog-footer {
+  border-top: 1px solid #eee;
+}
+

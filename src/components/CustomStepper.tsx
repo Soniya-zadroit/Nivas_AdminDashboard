@@ -17,12 +17,13 @@ const CustomStepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
         {steps.map((step, index) => {
           const isCompleted = index + 1 < currentStep;
           const isActive = index + 1 === currentStep;
+          const isLastStep = index === steps.length - 1;
 
           return (
             <React.Fragment key={index}>
               {/* Step Circle + Label */}
               <div className="flex flex-col items-center flex-shrink-0">
-                {isCompleted ? (
+                {isCompleted || (isActive && isLastStep) ? (
                   <CheckCircleIcon
                     weight="fill"
                     className="w-8 h-8 text-black"
@@ -35,12 +36,12 @@ const CustomStepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                     checked={isActive}
                     readOnly
                     className="
-                w-6 h-6 border-2 border-black rounded-full accent-black bg-white relative
-                checked:before:content-[''] checked:before:w-2.5 checked:before:h-2.5
-                checked:before:bg-black checked:before:rounded-full
-                checked:before:absolute checked:before:top-1/2 checked:before:left-1/2
-                checked:before:-translate-x-1/2 checked:before:-translate-y-1/2
-              "
+                      w-6 h-6 border-2 border-black rounded-full accent-black bg-white relative
+                      checked:before:content-[''] checked:before:w-2.5 checked:before:h-2.5
+                      checked:before:bg-black checked:before:rounded-full
+                      checked:before:absolute checked:before:top-1/2 checked:before:left-1/2
+                      checked:before:-translate-x-1/2 checked:before:-translate-y-1/2
+                    "
                   />
                 )}
                 <div className="mt-2 text-xs whitespace-nowrap">

@@ -4,7 +4,7 @@ import LabelSelect from "../../../components/LabelSelect";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import type { BrandRegistrationInterface } from "./Registration";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertMessage } from "../BrandRegistration";
+import { MissingInfoAlertDocuments } from "../BrandRegistration";
 
 // If your parent uses 'contactInformation' on BrandRegistrationInterface:
 type ContactInformationValue = BrandRegistrationInterface["contactInformation"];
@@ -17,20 +17,22 @@ interface ContactInformationProps {
   errors?: Partial<Record<keyof ContactInformationValue, string>>;
 }
 
-const ContactInformation: React.FC<ContactInformationProps> = ({ value, onChange, showValidate,
-  validateStatus, errors}) => {
+const ContactInformation: React.FC<ContactInformationProps> = ({
+  value,
+  onChange,
+  showValidate,
+  validateStatus,
+  errors,
+}) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Contact Information</h3>
         {showValidate &&
           (validateStatus ? (
-              <CheckCircleIcon
-                weight="fill"
-                className="text-green-500 w-5 h-5"
-              />
+            <CheckCircleIcon weight="fill" className="text-green-500 w-5 h-5" />
           ) : (
-              <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
+            <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
           ))}
       </div>
 
@@ -60,13 +62,19 @@ const ContactInformation: React.FC<ContactInformationProps> = ({ value, onChange
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabelInput
           label="Phone number"
-          type="tel"
+          type="text"
           required
           placeholder="+91 000 000 0000"
           value={value.phoneNumber}
-          onChange={(val: string) => onChange({ phoneNumber: val })}
+          onChange={(val: string) => {
+            // Allow only numbers and max 10 digits
+            if (/^\d{0,10}$/.test(val)) {
+              onChange({ phoneNumber: val });
+            }
+          }}
           error={errors?.phoneNumber}
         />
+
         <LabelInput
           label="Email address"
           type="email"
@@ -110,6 +118,7 @@ const ContactInformation: React.FC<ContactInformationProps> = ({ value, onChange
           value={value.zipCode}
           onChange={(val: string) => onChange({ zipCode: val })}
           error={errors?.zipCode}
+          maxLength={6} // restrict to 6 digits
         />
 
         <LabelSelect
@@ -151,11 +160,11 @@ const ContactInformation: React.FC<ContactInformationProps> = ({ value, onChange
         // error={errors?.proofDocument}
       />
 
-      {showValidate && !validateStatus && (
-              <div className="w-fit">
-                <MissingInfoAlertMessage />
-              </div>
-            )}
+      {showValidate && errors?.proofDocument && (
+        <div className="w-fit mt-2">
+          <MissingInfoAlertDocuments />
+        </div>
+      )}
     </div>
   );
 };

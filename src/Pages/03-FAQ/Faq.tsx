@@ -106,7 +106,7 @@ const Faq: React.FC<FaqModalProps> = ({ isOpen, onClose, onContactClick }) => {
             {faqData.topQuestions}
           </h2>
 
-          <div className="space-y-1 max-h-[calc(95vh-200px)] sm:max-h-96 overflow-y-auto scrollbar-hide cursor-pointer">
+          <div className="space-y-1 max-h-[calc(95vh-200px)] sm:max-h-96 overflow-y-hidden scrollbar-hide cursor-pointer">
             {faqData.faqs.map((faq) => {
               const isOpen = openItems.includes(faq.id);
               return (

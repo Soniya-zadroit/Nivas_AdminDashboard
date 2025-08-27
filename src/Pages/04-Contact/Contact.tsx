@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
 import image from "../../assets/Home/contact.png";
+import "../10-Investor/Investor.css";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -8,22 +8,41 @@ interface ContactModalProps {
 }
 
 const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleClick = (e: any) => {
+    e.preventDefault();
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // TODO: handle submission
+    let newErrors: { name?: string; email?: string; phone?: string } = {};
+
+    if (!name.trim()) newErrors.name = "Name is required *";
+    if (!email.trim()) newErrors.email = "Email is required *";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Enter a valid email *";
+    if (!phone.trim()) newErrors.phone = "Phone is required *";
+    else if (phone.length !== 10) newErrors.phone = "Phone must be 10 digits *";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return; // stop if errors
+
+    const to = "zadroit.development@gmail.com";
+    const subject = encodeURIComponent("Contact Form Submission");
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n\n\nBest regards,\n${name}`
+    );
+
+    const mailtoLink = `mailto:${to}?subject=${subject}&body=${body}`;
+    window.location.href = mailtoLink;
+
+    // Clear form & errors
+    setName("");
+    setEmail("");
+    setPhone("");
+    setErrors({});
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -35,58 +54,43 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     >
       <div
         className="bg-black rounded-2xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-800 relative flex flex-col lg:flex-row"
-        onClick={(e) => e.stopPropagation()} // prevent modal close on inside click
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Left side - Image */}
         <div className="lg:w-1/2 md:w-1/2 hidden lg:flex items-center justify-center bg-black">
-          <img
-            src={image}
-            alt="Contact"
-            className="w-[90%] h-[90%] object-cover"
-          />
+          <img src={image} alt="Contact" className="w-[90%] h-[90%] object-cover" />
         </div>
 
         {/* Right side - Form */}
-        <div className="w-full lg:w-1/2  p-6 lg:p-10 bg-[#000] flex flex-col justify-between">
-          {/* Mobile image (only for small screens) */}
+        <div className="w-full lg:w-1/2 p-6 lg:p-10 bg-[#000] flex flex-col justify-between">
           <div className="lg:hidden md:hidden mb-6 flex justify-center">
-            <img
-              src={image}
-              alt="Contact"
-              className="w-full h-48 object-cover rounded-lg"
-            />
+            <img src={image} alt="Contact" className="w-full h-48 object-cover rounded-lg" />
           </div>
 
           <div>
-            <h1 className="text-2xl lg:text-3xl font-poppins  text-[#ffb300] mb-4">
-              Contact Us
-            </h1>
+            <h1 className="text-2xl lg:text-3xl font-poppins text-[#ffb300] mb-4">Contact Us</h1>
             <p className="text-gray-300 mb-6 leading-relaxed text-[16px] lg:text-base">
               Got questions or need support? Our team is here to help you with
               orders, brands, and collaborations. Reach out and let&apos;s make
               fashion seamless for you.
             </p>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
-              className="space-y-8"
-            >
+            <div className="space-y-6">
               {/* Name */}
               <div className="relative">
                 <input
                   type="text"
+                  id="name"
                   name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder=" " // IMPORTANT: keep empty space for peer-placeholder-shown
-                  className="peer w-full bg-transparent border-b border-gray-600 text-white py-2 focus:outline-none focus:border-[#ffb300] placeholder-transparent"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder=" "
+                  className="w-full floating-input"
                 />
-                <label className="absolute left-0 top-2 text-gray-400 text-sm transition-all duration-200 peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-500 peer-placeholder-shown:text-sm peer-focus:-top-3 peer-focus:text-xs peer-focus:text-[#ffb300]">
+                <label htmlFor="name" className="floating-label">
                   Name
                 </label>
+                {errors.name && <p className="text-[#ffb300] text-[10px] mt-1">{errors.name}</p>}
               </div>
 
               {/* Email */}
@@ -94,29 +98,38 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder=" "
-                  className="peer w-full bg-transparent border-b border-gray-600 text-white py-2 focus:outline-none focus:border-[#ffb300] placeholder-transparent"
+                  className="w-full floating-input"
                 />
-                <label className="absolute left-0 top-2 text-gray-400 text-sm transition-all duration-200 peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-500 peer-placeholder-shown:text-sm peer-focus:-top-3 peer-focus:text-xs peer-focus:text-[#ffb300]">
+                <label htmlFor="email" className="floating-label">
                   Email Address
                 </label>
+                {errors.email && <p className="text-[#ffb300] text-[10px] mt-1">{errors.email}</p>}
               </div>
 
               {/* Phone */}
               <div className="relative">
                 <input
+                  id="phone"
                   type="tel"
                   name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
+                  value={phone}
+                  onChange={(e) => {
+                    const numericValue = e.target.value.replace(/\D/g, "");
+                    if (numericValue.length <= 10) setPhone(numericValue);
+                  }}
                   placeholder=" "
-                  className="peer w-full bg-transparent border-b border-gray-600 text-white py-2 focus:outline-none focus:border-[#ffb300] placeholder-transparent"
+                  className="w-full floating-input"
+                  maxLength={10}
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
                 />
-                <label className="absolute left-0 top-2 text-gray-400 text-sm transition-all duration-200 peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-500 peer-placeholder-shown:text-sm peer-focus:-top-3 peer-focus:text-xs peer-focus:text-[#ffb300]">
+                <label htmlFor="phone" className="floating-label">
                   Phone Number
                 </label>
+                {errors.phone && <p className="text-[#ffb300] text-[10px] mt-1">{errors.phone}</p>}
               </div>
 
               {/* Submit */}
@@ -124,11 +137,12 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   className="bg-[#ffb300] text-white font-semibold py-2 px-10 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-yellow-400/30 active:scale-95"
+                  onClick={handleClick}
                 >
                   Submit
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>

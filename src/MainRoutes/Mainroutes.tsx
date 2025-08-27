@@ -2,15 +2,20 @@
 import React from "react";
 import { Route, Routes, Outlet, useLocation } from "react-router-dom";
 
-import Header from "../Pages/00-Header/Header";
 import Home from "../Pages/01-Home/Home";
-import Company from "../Pages/02-Company/Company";
+
 
 import SellerRegistration from "../Pages/05-BrandRegistration/BrandRegistration";
 import { Sidebar } from "../Sidebar";
 import { StepperProvider } from "../Pages/05-BrandRegistration/StepperHandler/StepperProvider";
 import FaqPage from "../Pages/03-FAQ/FaqPage";
 import ContactPage from "../Pages/04-Contact/ContactPage";
+import Login from "../Pages/07-Login/Login";
+import PasswordPage from "../Pages/08-Password/PasswordPage";
+import Footer from "../Pages/09-Footer/Footer";
+import InvestorPage from "../Pages/10-Investor/InvestorPage";
+import Header from "../Pages/00-Header/Header";
+import BrandPage from "../Pages/11-BrandEnquiry/BrandPage";
 
 // Layout with sidebar
 const Layout: React.FC = () => (
@@ -41,11 +46,14 @@ const Wrapper: React.FC = () => {
   // Only show header for these paths
   const showHeaderOn = ["/", "/company", "/faq", "/contact"];
   const shouldShowHeader = showHeaderOn.includes(location.pathname);
+  const showFooterOn = ["/", "/company", "/faq", "/contact"];
+  const shouldShowFooter = showFooterOn.includes(location.pathname);
 
   return (
     <>
       {shouldShowHeader && <Header />}
       <Outlet />
+      {shouldShowFooter && <Footer />}
     </>
   );
 };
@@ -56,9 +64,14 @@ const Mainroutes: React.FC = () => {
       {/* Wrapper decides header visibility */}
       <Route element={<Wrapper />}>
         <Route path="/" element={<Home />} />
-        <Route path="/company" element={<Company />} />
+        {/* <Route path="/company" element={<Company />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/password" element={<PasswordPage />} />
         <Route path="/faq" element={<FaqPage />} />
+        <Route path="/investor" element={<InvestorPage />} />
+        <Route path="/brand" element={<BrandPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/footer" element={<Footer />} />
 
         {/* Brand registration with its own layout and context */}
         <Route element={<BrandRegistrationLayout />}>

@@ -90,7 +90,7 @@ export const Sidebar: React.FC = () => {
                 }
               `}
               >
-                <span className="text-2xl">{item.icon}</span>
+                <span className="text-xl">{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
             );

@@ -6,7 +6,8 @@ import {
   XCircleIcon,
 } from "@phosphor-icons/react";
 import { Button } from "primereact/button";
-import React from "react";
+import React, { useState } from "react";
+import DocumentViewer from "../../components/DocumentViewer";
 
 // types
 export interface BrandApplicationStatus {
@@ -58,13 +59,22 @@ interface Props {
   activeStep?: number; // Add activeStep prop to determine which step we're on
 }
 
-const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep, activeStep = 2 }) => {
+const BrandReview: React.FC<Props> = ({
+  brandReviewData,
+  setActiveStep,
+  activeStep = 2,
+}) => {
   console.log("Full brandReviewData:", brandReviewData);
   console.log("Status object:", brandReviewData?.brandApplicationStatus);
   console.log(
     "Status name:",
     brandReviewData?.brandApplicationStatus?.statusName
   );
+
+  const [selectedDoc, setSelectedDoc] = useState<{
+    title: string;
+    url: string;
+  } | null>(null);
 
   const statusConfig: Record<
     number,
@@ -100,7 +110,37 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep, activeSt
   const config = statusConfig[status] || statusConfig[0];
 
   // Only show documents in step 2 (edit application), hide in step 3
-  const shouldShowDocuments = activeStep === 2 && brandReviewData.document.showDocument;
+  const shouldShowDocuments =
+    activeStep === 2 && brandReviewData.document.showDocument;
+
+  // Document data with proper titles matching the image
+  const documents = [
+    {
+      title: "Address Proof",
+      size: "2.4 MB",
+      url: brandReviewData.document.addressProof.url,
+      downloadUrl: brandReviewData.document.addressProof.downloadUrl,
+    },
+    {
+      title: "GST Registration Certificate",
+      size: "1.4 MB",
+      url: brandReviewData.document.gstDocument.url,
+      downloadUrl: brandReviewData.document.gstDocument.downloadUrl,
+    },
+    {
+      title: "PAN Card",
+      size: "3.1 MB",
+      url: brandReviewData.document.panDocument.url,
+      downloadUrl: brandReviewData.document.panDocument.downloadUrl,
+    },
+  ];
+
+  const handleViewDocument = (docTitle: string, docUrl: string) => {
+    setSelectedDoc({
+      title: docTitle,
+      url: docUrl,
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -219,26 +259,7 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep, activeSt
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              {
-                title: "Address Proof",
-                size: "2.4 MB",
-                url: brandReviewData.document.addressProof.url,
-                downloadUrl: brandReviewData.document.addressProof.downloadUrl,
-              },
-              {
-                title: "GST Registration Certificate",
-                size: "1.4 MB",
-                url: brandReviewData.document.gstDocument.url,
-                downloadUrl: brandReviewData.document.gstDocument.downloadUrl,
-              },
-              {
-                title: "PAN Card",
-                size: "3.1 MB",
-                url: brandReviewData.document.panDocument.url,
-                downloadUrl: brandReviewData.document.panDocument.downloadUrl,
-              },
-            ].map((doc, idx) => (
+            {documents.map((doc, idx) => (
               <div
                 key={idx}
                 className="p-4 border border-[#E5E5E5] rounded-lg flex flex-col justify-between"
@@ -258,15 +279,21 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep, activeSt
 
                 <div className="flex items-center justify-between gap-4 mt-3">
                   <a
-                    href={doc.url}
-                    className="text-sm font-medium hover:underline"
+                    href="#"
+                    className="text-sm font-medium hover:underline text-black"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleViewDocument(doc.title, doc.url);
+                    }}
                   >
                     View Document
                   </a>
+
                   <a
                     href={doc.downloadUrl}
                     className="text-gray-600 text-sm hover:text-gray-900"
                     title="Download"
+                    download
                   >
                     <DownloadSimpleIcon weight="fill" size={24} />
                   </a>
@@ -275,6 +302,15 @@ const BrandReview: React.FC<Props> = ({ brandReviewData, setActiveStep, activeSt
             ))}
           </div>
         </div>
+      )}
+
+      {selectedDoc && (
+        <DocumentViewer
+          title={selectedDoc.title}
+          url={selectedDoc.url}
+          visible={!!selectedDoc}
+          onHide={() => setSelectedDoc(null)}
+        />
       )}
 
       {/* Actions & Feedback */}

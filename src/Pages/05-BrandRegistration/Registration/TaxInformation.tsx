@@ -3,7 +3,7 @@ import LabelInput from "../../../components/LabelInput";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import type { BrandRegistrationInterface } from "./Registration";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertMessage } from "../BrandRegistration";
+import { MissingInfoAlertDocuments } from "../BrandRegistration";
 
 // If your parent uses 'taxInformation' on BrandRegistrationInterface:
 type TaxInformationValue = BrandRegistrationInterface["taxInformation"];
@@ -16,20 +16,22 @@ interface TaxInformationProps {
   errors?: Partial<Record<keyof TaxInformationValue, string>>;
 }
 
-const TaxInformation: React.FC<TaxInformationProps> = ({ value, onChange, showValidate,
-  validateStatus, errors}) => {
+const TaxInformation: React.FC<TaxInformationProps> = ({
+  value,
+  onChange,
+  showValidate,
+  validateStatus,
+  errors,
+}) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Tax Information</h3>
         {showValidate &&
           (validateStatus ? (
-              <CheckCircleIcon
-                weight="fill"
-                className="text-green-500 w-5 h-5"
-              />
+            <CheckCircleIcon weight="fill" className="text-green-500 w-5 h-5" />
           ) : (
-              <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
+            <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
           ))}
       </div>
 
@@ -60,6 +62,11 @@ const TaxInformation: React.FC<TaxInformationProps> = ({ value, onChange, showVa
         <DropzoneUpload
           label="GST Registration Certificate"
           required
+          accept=".pdf,image/*"
+        />
+        {/* <DropzoneUpload
+          label="GST Registration Certificate"
+          required
           // value={value.gstDocumant}
           // onChange={(fileOrPath: File | string | null) =>
           //   onChange({ gstDocumant: (fileOrPath as any) ?? "" })
@@ -70,7 +77,7 @@ const TaxInformation: React.FC<TaxInformationProps> = ({ value, onChange, showVa
           // buttonLabel="Choose File"
           // showPreview
           // error={errors?.gstDocumant}
-        />
+        /> */}
 
         <DropzoneUpload
           label="PAN Card"
@@ -84,15 +91,15 @@ const TaxInformation: React.FC<TaxInformationProps> = ({ value, onChange, showVa
           // helperText="Upload a scanned copy of your PAN Card"
           // buttonLabel="Choose File"
           // showPreview
-          // error={errors?.panDocument} 
+          // error={errors?.panDocument}
         />
       </div>
 
-      {showValidate && !validateStatus && (
-              <div className="w-fit">
-                <MissingInfoAlertMessage />
-              </div>
-            )}
+        {showValidate && !validateStatus && (
+          <div className="w-fit">
+            <MissingInfoAlertDocuments />
+          </div>
+        )}
     </div>
   );
 };

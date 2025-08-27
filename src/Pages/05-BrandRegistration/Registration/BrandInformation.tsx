@@ -5,7 +5,11 @@ import LabelSelect from "../../../components/LabelSelect";
 import type { BrandRegistrationInterface } from "./Registration";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertMessage } from "../BrandRegistration";
+import {
+  MissingInfoAlertCount,
+  MissingInfoAlertDocuments,
+} from "../BrandRegistration";
+import DropImage from "../../../components/DropImage";
 
 type BrandInformationValue = BrandRegistrationInterface["brandInformation"];
 
@@ -24,7 +28,6 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
   validateStatus,
   errors,
 }) => {
-
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
       <div className="flex justify-between items-center">
@@ -47,6 +50,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
           value={value.brandName}
           onChange={(val: string) => onChange({ brandName: val })}
           error={errors?.brandName}
+          maxLength={30}
         />
 
         <LabelSelect
@@ -54,9 +58,9 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
           value={value.productCategory}
           onChange={(val: string) => onChange({ productCategory: val })}
           options={[
-            { label: "Fashion", value: "fashion" },
-            { label: "Food", value: "food" },
-            { label: "Electronics", value: "electronics" },
+            { label: "Fashion & Apparel", value: "fashion" },
+            { label: "Beauty & Wellness", value: "beauty" },
+            { label: "Others", value: "others" },
           ]}
           error={errors?.productCategory}
           required
@@ -64,7 +68,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
       </div>
 
       {/* Brand Logo */}
-      <DropzoneUpload
+      <DropImage
         label="Brand logo"
         // required
         // value={value.brandLogoPath}
@@ -73,7 +77,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
         // }}
         accept="image/*"
         // maxSizeMB={5}
-        // helperText="Drop your logo here or click to browse"
+        // helperText=""
         // buttonLabel="Choose File"
         // showPreview
         // error={errors?.brandLogoPath}
@@ -83,6 +87,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
       <LabelInput
         label="Brand Description"
         type="textarea"
+        maxLength={300}
         placeholder="Describe your brand, products and what makes you unique"
         value={value.brandDescription}
         onChange={(val: string) => onChange({ brandDescription: val })}
@@ -121,9 +126,14 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
       />
       */}
 
-      {showValidate && !validateStatus && (
+      {/* {showValidate && !validateStatus && (
         <div className="w-fit">
           <MissingInfoAlertMessage />
+        </div>
+      )} */}
+      {showValidate && !validateStatus && (
+        <div className="w-fit">
+          <MissingInfoAlertCount count={Object.keys(errors || {}).length} />
         </div>
       )}
     </div>

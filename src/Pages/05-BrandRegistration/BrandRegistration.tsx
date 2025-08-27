@@ -4,9 +4,11 @@ import Registration from "./Registration/Registration";
 import { InfoIcon } from "@phosphor-icons/react";
 import BrandReview, { type BrandReviewData } from "./BrandReview";
 import { useStepperContext } from "./StepperHandler/StepperProvider";
+import { numberToWords } from "../../helpers/Helper";
 
 const BrandRegistration: React.FC = () => {
   const { activeStep, setActiveStep, stepContent } = useStepperContext();
+
 
   let brandReviewData: BrandReviewData = {
     brandApplicationStatus: {
@@ -48,10 +50,10 @@ const BrandRegistration: React.FC = () => {
   return (
     <div className="w-full space-y-6 poppins">
       <div className="">
-        <h1 className="font-bold text-2xl font-poppins mb-4">
+        <h1 className="font-semibold text-2xl font-poppins mb-4">
           {stepContent[activeStep - 1].title}
         </h1>
-        <p className="text-gray-600 sm">
+        <p className="text-gray-600 text-sm">
           {stepContent[activeStep - 1].description}
         </p>
       </div>
@@ -90,11 +92,55 @@ export const MissingInfoAlertMessage: React.FC = () => {
 
       {/* Text */}
       <div>
-        <h5 className="text-sm font-semibold text-gray-900 m-0">
+        <h5 className="text-[12px] font-medium text-gray-900 m-0">
           Missing information
         </h5>
-        <p className="text-sx text-gray-700">
+        <p className="text-[10px] text-gray-700">
           Oops! You missed to fill some mandatory fields
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export const MissingInfoAlertCount: React.FC<{ count: number }> = ({
+  count,
+}) => {
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-md bg-orange-100">
+      {/* Icon */}
+      <div className="flex items-center justify-center w-8 h-8 rounded-md bg-orange-200">
+        <InfoIcon weight="fill" className="text-red-500 w-5 h-5" />
+      </div>
+
+      {/* Text */}
+      <div>
+        <h5 className="text-[12px] font-medium text-gray-900 m-0">
+          Missing information
+        </h5>
+        <p className="text-[10px] text-gray-700">
+          Oops! You missed to fill{" "}
+          <span className="font-semibold">{numberToWords(count)}</span>{" "}
+          mandatory field
+          {count > 1 ? "s" : ""}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export const MissingInfoAlertDocuments: React.FC = () => {
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-md bg-orange-100">
+      <div className="flex items-center justify-center w-8 h-8 rounded-md bg-orange-200">
+        <InfoIcon weight="fill" className="text-red-500 w-5 h-5" />
+      </div>
+      <div>
+        <h5 className="text-[12px] font-medium text-gray-900 m-0">
+          Missing information
+        </h5>
+        <p className="text-[10px] text-gray-700">
+          Oops! You missed to Upload a document
         </p>
       </div>
     </div>

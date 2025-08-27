@@ -1,30 +1,38 @@
 import React from "react";
-import company from "../../assets/Home/company.png";
+import company from "../../assets/Home/CompanyBg.png";
+import companytabs from "../../assets/Home/Company_Tab.png";
 
 const Company: React.FC = () => {
   return (
-    <div className="relative w-full min-h-screen">
-      {/* Background Image */}
+    <div className="relative w-full h-screen flex items-center overflow-hidden">
+      {/* Background Images */}
+      {/* Desktop Background */}
       <img
         src={company}
-        alt="Company Background"
-        className="lg:w-full md:w-full w-full lg:h-auto md:h-auto h-full  min-h-screen object-cover absolute inset-0"
+        alt="Company Desktop Background"
+        className="hidden lg:block absolute inset-0 w-full h-[120vh] object-cover"
+      />
+      {/* Tablet Background */}
+      <img
+        src={companytabs}
+        alt="Company Tab Background"
+        className="block lg:hidden absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-opacity-30 flex items-center justify-end px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 lg:pt-30">
-        <div className="align-middle text-center max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-2xl">
+      {/* Overlay Content */}
+      <div className="relative z-10 flex w-full justify-end px-6 sm:px-10 lg:px-20">
+        <div className="max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl p-6 sm:p-10 mt-20 text-right">
           <h2
-            className="font-agraham text-xl sm:text-2xl md:text-3xl lg:text-2xl xl:text-5xl text-black "
+            className="font-agraham w-[full] flex justify-center md:w-[100%]  text-center text-lg sm:text-2xl md:text-xl lg:text-2xl  text-black"
             style={{ fontFamily: "Agraham" }}
           >
             We Are Creating a
           </h2>
-          <h1 className="poppins flex flex-col gap-2  text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-black font-semibold font-poppins mt-2 sm:mt-3 lg:mt-7 md:mt-4">
-            <p>Celebrity</p>
-            <p> To Consumer</p>
-            <p>Exclusive</p>
-            <p> Marketplace</p>
+          <h1 className="poppins flex flex-col items-center gap-2 text-2xl sm:text-4xl md:text-5xl lg:text-6xl  text-black font-medium mt-3 sm:mt-5 lg:mt-7">
+            <span>Celebrity</span>
+            <span>To Consumer</span>
+            <span>Exclusive</span>
+            <span>Marketplace</span>
           </h1>
         </div>
       </div>
