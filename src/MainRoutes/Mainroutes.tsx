@@ -4,7 +4,6 @@ import { Route, Routes, Outlet, useLocation } from "react-router-dom";
 
 import Home from "../Pages/01-Home/Home";
 
-
 import SellerRegistration from "../Pages/05-BrandRegistration/BrandRegistration";
 import { Sidebar } from "../Sidebar";
 import { StepperProvider } from "../Pages/05-BrandRegistration/StepperHandler/StepperProvider";
@@ -16,6 +15,8 @@ import Footer from "../Pages/09-Footer/Footer";
 import InvestorPage from "../Pages/10-Investor/InvestorPage";
 import Header from "../Pages/00-Header/Header";
 import BrandPage from "../Pages/11-BrandEnquiry/BrandPage";
+import Aboutus from "../Pages/12-AboutUs/Aboutus";
+import AboutusPage from "../Pages/12-AboutUs/AboutusPage";
 
 // Layout with sidebar
 const Layout: React.FC = () => (
@@ -44,9 +45,9 @@ const Wrapper: React.FC = () => {
   const location = useLocation();
 
   // Only show header for these paths
-  const showHeaderOn = ["/", "/company", "/faq", "/contact"];
+  const showHeaderOn = ["/", "/company", "/faq", "/contact", "/about"];
   const shouldShowHeader = showHeaderOn.includes(location.pathname);
-  const showFooterOn = ["/", "/company", "/faq", "/contact"];
+  const showFooterOn = ["/", "/company", "/faq", "/contact", "/about"];
   const shouldShowFooter = showFooterOn.includes(location.pathname);
 
   return (
@@ -70,6 +71,7 @@ const Mainroutes: React.FC = () => {
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/investor" element={<InvestorPage />} />
         <Route path="/brand" element={<BrandPage />} />
+        <Route path="/about" element={<AboutusPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/footer" element={<Footer />} />
 

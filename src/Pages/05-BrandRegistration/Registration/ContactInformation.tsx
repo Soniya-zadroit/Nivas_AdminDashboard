@@ -4,9 +4,8 @@ import LabelSelect from "../../../components/LabelSelect";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import type { BrandRegistrationInterface } from "./Registration";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertDocuments } from "../BrandRegistration";
+import { MissingInfoAlertCount, MissingInfoAlertDocuments } from "../BrandRegistration";
 
-// If your parent uses 'contactInformation' on BrandRegistrationInterface:
 type ContactInformationValue = BrandRegistrationInterface["contactInformation"];
 
 interface ContactInformationProps {
@@ -24,6 +23,61 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
   validateStatus,
   errors,
 }) => {
+  // Validation functions
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    return /^[6-9]\d{9}$/.test(phone); // Indian mobile number format
+  };
+
+  const validatePincode = (pincode: string): boolean => {
+    return /^\d{6}$/.test(pincode); // Indian pincode format
+  };
+
+  // Indian states list
+  const indianStates = [
+    { label: "Select State", value: "" },
+    { label: "Andaman and Nicobar Islands", value: "Andaman and Nicobar Islands" },
+    { label: "Andhra Pradesh", value: "Andhra Pradesh" },
+    { label: "Arunachal Pradesh", value: "Arunachal Pradesh" },
+    { label: "Assam", value: "Assam" },
+    { label: "Bihar", value: "Bihar" },
+    { label: "Chandigarh", value: "Chandigarh" },
+    { label: "Chhattisgarh", value: "Chhattisgarh" },
+    { label: "Dadra and Nagar Haveli and Daman and Diu", value: "Dadra and Nagar Haveli and Daman and Diu" },
+    { label: "Delhi", value: "Delhi" },
+    { label: "Goa", value: "Goa" },
+    { label: "Gujarat", value: "Gujarat" },
+    { label: "Haryana", value: "Haryana" },
+    { label: "Himachal Pradesh", value: "Himachal Pradesh" },
+    { label: "Jammu and Kashmir", value: "Jammu and Kashmir" },
+    { label: "Jharkhand", value: "Jharkhand" },
+    { label: "Karnataka", value: "Karnataka" },
+    { label: "Kerala", value: "Kerala" },
+    { label: "Ladakh", value: "Ladakh" },
+    { label: "Lakshadweep", value: "Lakshadweep" },
+    { label: "Madhya Pradesh", value: "Madhya Pradesh" },
+    { label: "Maharashtra", value: "Maharashtra" },
+    { label: "Manipur", value: "Manipur" },
+    { label: "Meghalaya", value: "Meghalaya" },
+    { label: "Mizoram", value: "Mizoram" },
+    { label: "Nagaland", value: "Nagaland" },
+    { label: "Odisha", value: "Odisha" },
+    { label: "Puducherry", value: "Puducherry" },
+    { label: "Punjab", value: "Punjab" },
+    { label: "Rajasthan", value: "Rajasthan" },
+    { label: "Sikkim", value: "Sikkim" },
+    { label: "Tamil Nadu", value: "Tamil Nadu" },
+    { label: "Telangana", value: "Telangana" },
+    { label: "Tripura", value: "Tripura" },
+    { label: "Uttar Pradesh", value: "Uttar Pradesh" },
+    { label: "Uttarakhand", value: "Uttarakhand" },
+    { label: "West Bengal", value: "West Bengal" }
+  ];
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
       <div className="flex justify-between items-center">
@@ -39,13 +93,14 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
       {/* Contact person + Designation */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabelInput
-          label="Contact person"
+          label="Contact Person"
           type="text"
           required
           placeholder="Full name"
           value={value.contactPerson}
           onChange={(val: string) => onChange({ contactPerson: val })}
           error={errors?.contactPerson}
+          maxLength={50}
         />
         <LabelInput
           label="Designation"
@@ -55,34 +110,32 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           value={value.designation}
           onChange={(val: string) => onChange({ designation: val })}
           error={errors?.designation}
+          maxLength={50}
         />
       </div>
 
       {/* Phone number + Email address */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabelInput
-          label="Phone number"
-          type="text"
+          label="Phone Number"
+          type="tel"
           required
           placeholder="+91 000 000 0000"
           value={value.phoneNumber}
-          onChange={(val: string) => {
-            // Allow only numbers and max 10 digits
-            if (/^\d{0,10}$/.test(val)) {
-              onChange({ phoneNumber: val });
-            }
-          }}
-          error={errors?.phoneNumber}
+          onChange={(val: string) => onChange({ phoneNumber: val })}
+          error={errors?.phoneNumber || (!validatePhone(value.phoneNumber) && value.phoneNumber ? "Please enter a valid 10-digit mobile number" : undefined)}
+          maxLength={10}
         />
 
         <LabelInput
-          label="Email address"
+          label="Email Address"
           type="email"
           required
           placeholder="Enter your email address"
           value={value.email}
           onChange={(val: string) => onChange({ email: val })}
-          error={errors?.email}
+          error={errors?.email || (!validateEmail(value.email) && value.email ? "Please enter a valid email address" : undefined)}
+          maxLength={100}
         />
       </div>
 
@@ -96,6 +149,7 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           value={value.address}
           onChange={(val: string) => onChange({ address: val })}
           error={errors?.address}
+          maxLength={200}
         />
         <LabelInput
           label="City/Town"
@@ -105,20 +159,21 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           value={value.city}
           onChange={(val: string) => onChange({ city: val })}
           error={errors?.city}
+          maxLength={50}
         />
       </div>
 
       {/* Postal code + State */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabelInput
-          label="Postal code"
-          type="number"
+          label="Postal Code"
+          type="text"
           required
           placeholder="Enter Postal code/Pincode"
           value={value.zipCode}
           onChange={(val: string) => onChange({ zipCode: val })}
-          error={errors?.zipCode}
-          maxLength={6} // restrict to 6 digits
+          error={errors?.zipCode || (!validatePincode(value.zipCode) && value.zipCode ? "Please enter a valid 6-digit pincode" : undefined)}
+          maxLength={6}
         />
 
         <LabelSelect
@@ -126,40 +181,35 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           required
           value={value.state}
           onChange={(val: string) => onChange({ state: val })}
-          options={[
-            { label: "Select State", value: "" },
-            { label: "Andhra Pradesh", value: "Andhra Pradesh" },
-            { label: "Assam", value: "Assam" },
-            { label: "Bihar", value: "Bihar" },
-            { label: "Delhi", value: "Delhi" },
-            { label: "Gujarat", value: "Gujarat" },
-            { label: "Karnataka", value: "Karnataka" },
-            { label: "Maharashtra", value: "Maharashtra" },
-            { label: "Rajasthan", value: "Rajasthan" },
-            { label: "Tamil Nadu", value: "Tamil Nadu" },
-            { label: "Telangana", value: "Telangana" },
-            // ...add the rest as needed
-          ]}
+          options={indianStates}
           error={errors?.state}
         />
       </div>
 
       {/* Address proof upload */}
       <DropzoneUpload
-        label="Address proof"
+        label="Address Proof"
         required
+        // Uncomment when implementing file handling
         // value={value.proofDocument}
         // onChange={(fileOrPath: File | string | null) =>
         //   onChange({ proofDocument: (fileOrPath as any) ?? "" })
         // }
-        accept=".pdf,image/*"
+        accept=".pdf,.jpg,.jpeg,.png"
         // maxSizeMB={5}
-        // helperText="Upload any scanned address proof documents"
+        // helperText="Upload any scanned address proof documents (Aadhar Card, Passport, Utility Bill, etc.) - Max 5MB"
         // buttonLabel="Choose File"
         // showPreview
         // error={errors?.proofDocument}
       />
 
+      {/* Validation Summary */}
+      {showValidate && !validateStatus && (
+        <div className="w-fit">
+          <MissingInfoAlertCount count={Object.keys(errors || {}).length} />
+        </div>
+      )}
+      
       {showValidate && errors?.proofDocument && (
         <div className="w-fit mt-2">
           <MissingInfoAlertDocuments />

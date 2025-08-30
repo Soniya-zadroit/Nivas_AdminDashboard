@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Instagram, Facebook, Twitter, Linkedin } from "lucide-react";
 import { MdCheckCircle } from "react-icons/md";
-import logo from "../../assets/Images/Yellowlogo2.png";
+import logo from "../../assets/Images/Yellowlogo3.png";
 import { FaAndroid, FaApple, FaWindows } from "react-icons/fa6";
 import { TbBrandInstagramFilled } from "react-icons/tb";
 import { IoLogoFacebook } from "react-icons/io";
@@ -11,6 +11,7 @@ import Brand from "../11-BrandEnquiry/Brand";
 import Investor from "../10-Investor/Investor";
 import Faq from "../03-FAQ/Faq";
 import Contact from "../04-Contact/Contact";
+import Aboutus from "../12-AboutUs/Aboutus";
 
 const Footer: React.FC = () => {
   const [isBrandOpen, setIsBrandOpen] = useState(false);
@@ -18,6 +19,36 @@ const Footer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(""); // track active tab
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email.trim()) {
+      alert("Please enter your email address");
+      return;
+    }
+
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Enter a valid email address");
+      return;
+    }
+
+    // Mailto
+    const to = "zadroit.development@gmail.com"; // your target email
+    const subject = encodeURIComponent("Newsletter Subscription");
+    const body = encodeURIComponent(
+      `Hello,\n\nMy email is: ${email}\nI would like to know more about your services.\n\nThanks.`
+    );
+
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+
+    setEmail(""); // Reset input
+  };
 
   const handleBrandClick = () => {
     setIsBrandOpen(true);
@@ -34,6 +65,11 @@ const Footer: React.FC = () => {
   const handleContactClick = () => {
     setIsContactOpen(true);
     setActiveTab("contact");
+  };
+
+  const handleAboutClick = () => {
+    setIsAboutOpen(true);
+    setActiveTab("about");
   };
 
   const handleFaqClick = () => {
@@ -56,31 +92,38 @@ const Footer: React.FC = () => {
           <div className="flex flex-col justify-between">
             {/* Logo + Tagline */}
             <div className="space-y-6 ">
-               <a
-                  href="/"
-                  onClick={() => {
-                    setActiveTab("/");
-                  }}
-                >
-                  <img src={logo} alt="logo" className="w-28 mb-5" />
-                </a>
-             
+              <a
+                href="/"
+                onClick={() => {
+                  setActiveTab("/");
+                }}
+              >
+                <img src={logo} alt="logo" className="w-28 mb-5" />
+              </a>
+
               <p className="text-[#747474] text-sm max-w-sm poppins">
                 Heard Of Celebrity To Consumer Platform? <br />
                 Stay Tuned!
               </p>
 
               {/* Email Subscription */}
-              <div className="flex gap-3 max-w-md">
-                <input
-                  type="email"
-                  placeholder="Type your email address"
-                  className="flex-1 bg-black border border-[#747474] rounded-full px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
-                />
-                <button className="bg-white text-black font-semibold px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors">
-                  Submit
-                </button>
-              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="flex gap-3 max-w-md">
+                  <input
+                    type="email"
+                    placeholder="Type your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 bg-black border border-[#747474] rounded-full px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-white text-black font-semibold px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
 
               {/* Social Icons */}
               <div className="flex gap-4">
@@ -112,12 +155,12 @@ const Footer: React.FC = () => {
               </h3>
               <ul className="space-y-3 text-sm ">
                 <li>
-                  <a
-                    href="#"
-                    className="hover:text-white text-[#747474] transition-colors"
+                  <button
+                    onClick={handleAboutClick}
+                    className="hover:text-white text-[#747474] transition-colors cursor-pointer"
                   >
                     About Us
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -235,6 +278,7 @@ const Footer: React.FC = () => {
         onClose={() => setIsFaqOpen(false)}
         onContactClick={() => setIsContactOpen(true)}
       />
+      <Aboutus isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
 
       <Contact isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </footer>

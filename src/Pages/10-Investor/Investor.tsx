@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
 import image from "../../assets/Home/Investor.png";
 import "./Investor.css";
 
@@ -14,17 +13,47 @@ const Investor: React.FC<InvestorModalProps> = ({ isOpen, onClose }) => {
     email: "",
     message: "",
   });
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    message?: string;
+  }>({});
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleClick = (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // TODO: handle submission
+    let newErrors: { name?: string; email?: string; message?: string } = {};
+
+    // Name validation
+    if (!formData.name.trim()) newErrors.name = "Name is required *";
+    else if (!/^[a-zA-Z\s]+$/.test(formData.name))
+      newErrors.name = "Only letters are allowed *";
+
+    // Email validation
+    if (!formData.email.trim()) newErrors.email = "Email is required *";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(formData.email))
+      newErrors.email = "Enter a valid email *";
+
+    // Message validation
+    if (!formData.message.trim()) newErrors.message = "Message is required *";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return; // stop if errors
+
+    const to = "zadroit.development@gmail.com";
+    const subject = encodeURIComponent("Investor Enquiry");
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nMessage: ${formData.message}\n\n\n\nBest regards,\n${formData.name}`
+    );
+
+    const mailtoLink = `mailto:${to}?subject=${subject}&body=${body}`;
+    window.location.href = mailtoLink;
+
+    // Reset after success
+    setFormData({ name: "", email: "", message: "" });
+    setErrors({});
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -36,7 +65,7 @@ const Investor: React.FC<InvestorModalProps> = ({ isOpen, onClose }) => {
     >
       <div
         className="bg-black rounded-2xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-800 relative flex flex-col lg:flex-row"
-        onClick={(e) => e.stopPropagation()} // prevent modal close on inside click
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Left side - Image */}
         <div className="lg:w-1/2 md:w-1/2 hidden lg:flex items-center justify-center bg-black">
@@ -48,8 +77,8 @@ const Investor: React.FC<InvestorModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Right side - Form */}
-        <div className="w-full lg:w-1/2  p-6 lg:p-10 bg-[#000] flex flex-col justify-between">
-          {/* Mobile image (only for small screens) */}
+        <div className="w-full lg:w-1/2 p-6 lg:p-10 bg-[#000] flex flex-col justify-between">
+          {/* Mobile image */}
           <div className="lg:hidden md:hidden mb-6 flex justify-center">
             <img
               src={image}
@@ -59,24 +88,18 @@ const Investor: React.FC<InvestorModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div>
-            <h1 className="text-2xl lg:text-3xl font-poppins  text-white mb-4">
+            <h1 className="text-2xl lg:text-3xl font-poppins text-white mb-4">
               Investor Relations
             </h1>
-            <p className="text-[#808080]  leading-relaxed text-[16px] poppins font-extralight lg:text-base">
+            <p className="text-[#808080] leading-relaxed text-[16px] poppins font-extralight lg:text-base">
               We are not your usual marketplace, we have heard what our
               consumers want and we bring it big!
             </p>
             <p className="text-[#bfbfbf] mb-6 leading-relaxed text-[16px] poppins font-extralight lg:text-base">
-              Here us out!
+              Hear us out!
             </p>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}
-              className="space-y-8"
-            >
+            <form className="space-y-6" onSubmit={handleClick}>
               {/* Name */}
               <div className="relative">
                 <input
@@ -84,13 +107,18 @@ const Investor: React.FC<InvestorModalProps> = ({ isOpen, onClose }) => {
                   type="text"
                   name="name"
                   value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder=" " // important: single space to enable :placeholder-shown
-                  className="w-full floating-input" // you can add other tailwind classes if needed
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder=" "
+                  className="w-full floating-input"
                 />
                 <label htmlFor="investor-name" className="floating-label">
                   Name
                 </label>
+                {errors.name && (
+                  <p className="text-[#ffb300] text-xs mt-1">{errors.name}</p>
+                )}
               </div>
 
               {/* Email */}
@@ -100,29 +128,41 @@ const Investor: React.FC<InvestorModalProps> = ({ isOpen, onClose }) => {
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleInputChange}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   placeholder=" "
                   className="w-full floating-input"
                 />
                 <label htmlFor="investor-email" className="floating-label">
                   Email Address
                 </label>
+                {errors.email && (
+                  <p className="text-[#ffb300] text-xs mt-1">{errors.email}</p>
+                )}
               </div>
 
               {/* Message */}
               <div className="relative">
-                <input
+                <textarea
                   id="investor-message"
-                  type="text"
                   name="message"
                   value={formData.message}
-                  onChange={handleInputChange}
-                  placeholder=" " // important: single space to enable :placeholder-shown
-                  className="w-full floating-input" // you can add other tailwind classes if needed
+                  onChange={(e) =>
+                    setFormData({ ...formData, message: e.target.value })
+                  }
+                  placeholder=" "
+                  rows={3}
+                  className="w-full floating-input resize-none"
                 />
-                <label htmlFor="investor-name" className="floating-label">
-                  Write a message 
+                <label htmlFor="investor-message" className="floating-label">
+                  Write a message
                 </label>
+                {errors.message && (
+                  <p className="text-[#ffb300] text-xs mt-1">
+                    {errors.message}
+                  </p>
+                )}
               </div>
 
               {/* Submit */}

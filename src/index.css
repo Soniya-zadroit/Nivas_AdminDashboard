@@ -21,8 +21,8 @@ html {
   display: none;
 }
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE/Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
 }
 /* Hide scrollbar but keep scroll */
 .scrollbar-hide::-webkit-scrollbar {
@@ -30,10 +30,30 @@ html {
 }
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE & Edge */
-  scrollbar-width: none;    /* Firefox */
+  scrollbar-width: none; /* Firefox */
 }
 
+/* Apply to all autofilled inputs */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* override bg */
+  -webkit-text-fill-color: #000 !important; /* text color */
+  transition: background-color 5000s ease-in-out 0s; /* prevent flash */
+}
+.comfortaa {
+  font-family: "Comfortaa", sans-serif;
+}
 
+/* Optional: dark mode override */
+@media (prefers-color-scheme: dark) {
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #111 inset !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+}
 
 /* For Firefox */
 html {
@@ -46,12 +66,12 @@ body {
 }
 /* index.css */
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari */
+  display: none; /* Chrome, Safari */
 }
 
 .agraham {
@@ -145,9 +165,8 @@ body {
 }
 
 .p-inputtext {
-  @apply rounded-lg
+  @apply rounded-lg;
 }
-
 
 /* Hide scrollbar for Chrome, Safari, Edge */
 ::-webkit-scrollbar {
@@ -163,5 +182,3 @@ html {
 html {
   -ms-overflow-style: none;
 }
-
-

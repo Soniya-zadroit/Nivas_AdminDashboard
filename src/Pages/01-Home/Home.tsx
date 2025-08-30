@@ -60,7 +60,7 @@ const Home: React.FC = () => {
                   w-[70%] sm:w-[40%] md:w-[50%] lg:w-[23%]
                   bg-[#e17603] text-white font-semibold rounded-full 
                   shadow-lg hover:bg-[#d6a518] transition 
-                  text-sm sm:text-base poppins
+                  text-sm sm:text-base poppins cursor-pointer
                 "
                 onClick={() => {
                   navigate("/brandregistration");

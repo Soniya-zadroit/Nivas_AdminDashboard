@@ -1,7 +1,6 @@
 import React from "react";
 import LabelInput from "../../../components/LabelInput";
 import LabelSelect from "../../../components/LabelSelect";
-// import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import type { BrandRegistrationInterface } from "./Registration";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
@@ -28,6 +27,28 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
   validateStatus,
   errors,
 }) => {
+  // Validation functions
+  const validateWebsiteURL = (url: string): boolean => {
+    if (!url) return true; // Optional field
+    const urlRegex =
+      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+    return urlRegex.test(url);
+  };
+
+  const validateInstagram = (handle: string): boolean => {
+    if (!handle) return true; // Optional field
+
+    // Allow full Instagram URLs or just usernames
+    if (handle.includes("instagram.com/")) {
+      const urlRegex = /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?$/;
+      return urlRegex.test(handle);
+    } else {
+      // Just username validation
+      const instagramRegex = /^[a-zA-Z0-9._]{1,30}$/;
+      return instagramRegex.test(handle.replace("@", ""));
+    }
+  };
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
       <div className="flex justify-between items-center">
@@ -58,6 +79,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
           value={value.productCategory}
           onChange={(val: string) => onChange({ productCategory: val })}
           options={[
+            { label: "Select Category", value: "" },
             { label: "Fashion & Apparel", value: "fashion" },
             { label: "Beauty & Wellness", value: "beauty" },
             { label: "Others", value: "others" },
@@ -69,15 +91,16 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
 
       {/* Brand Logo */}
       <DropImage
-        label="Brand logo"
+        label="Brand logo *"
+        accept="image/*"
+        // Uncomment when implementing file handling
         // required
         // value={value.brandLogoPath}
         // onChange={(file: File | null) => {
         //   onChange({ brandLogoPath: file });
         // }}
-        accept="image/*"
-        // maxSizeMB={5}
-        // helperText=""
+        // maxSizeMB={2}
+        // helperText="Upload brand logo (Max 2MB, formats: JPG, PNG, SVG)"
         // buttonLabel="Choose File"
         // showPreview
         // error={errors?.brandLogoPath}
@@ -87,50 +110,61 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
       <LabelInput
         label="Brand Description"
         type="textarea"
+        required
         maxLength={300}
-        placeholder="Describe your brand, products and what makes you unique"
+        placeholder="Describe your brand, products and what makes you unique (max 300 characters)"
         value={value.brandDescription}
         onChange={(val: string) => onChange({ brandDescription: val })}
         error={errors?.brandDescription}
+        rows={4}
       />
 
       {/* Website + Instagram */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabelInput
           label="Website URL"
-          type="text"
+          type="url"
           placeholder="https://yourbrand.com"
           value={value.websiteURL}
-          onChange={(val: string) => onChange({ websiteURL: val })}
-          error={errors?.websiteURL}
+          onChange={(val: string) => {
+            // Auto-add https:// if not present and URL is being typed
+            let url = val.trim();
+            if (
+              url &&
+              !url.startsWith("http://") &&
+              !url.startsWith("https://")
+            ) {
+              if (url.includes(".") && url.length > 3) {
+                url = "https://" + url;
+              }
+            }
+            onChange({ websiteURL: url });
+          }}
+          error={
+            errors?.websiteURL ||
+            (!validateWebsiteURL(value.websiteURL)
+              ? "Please enter a valid website URL"
+              : undefined)
+          }
+          maxLength={100}
         />
 
         <LabelInput
-          label="Instagram Handle"
-          type="text"
-          placeholder="@yourbrand"
+          label="Insta handle/Storefront*"
+          type="instagram"
+          placeholder="Enter your Instagram handle"
           value={value.instragram}
           onChange={(val: string) => onChange({ instragram: val })}
-          error={errors?.instragram}
+          error={
+            errors?.instragram ||
+            (!validateInstagram(value.instragram)
+              ? "Please enter a valid Instagram username or URL"
+              : undefined)
+          }
         />
       </div>
 
-      {/* Optional Phone Number (uncomment if used in your type)
-      <LabelInput
-        label="Phone Number"
-        type="tel"
-        required
-        placeholder="Enter phone number"
-        value={value.phoneNumber ?? ""}
-        onChange={(val: string) => onChange({ phoneNumber: val })}
-      />
-      */}
-
-      {/* {showValidate && !validateStatus && (
-        <div className="w-fit">
-          <MissingInfoAlertMessage />
-        </div>
-      )} */}
+      {/* Validation Summary */}
       {showValidate && !validateStatus && (
         <div className="w-fit">
           <MissingInfoAlertCount count={Object.keys(errors || {}).length} />

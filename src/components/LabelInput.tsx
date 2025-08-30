@@ -13,16 +13,17 @@ interface LabelInputProps {
     | "textarea"
     | "email"
     | "tel"
-    | "value";
+    | "url"
+    | "instagram";
   placeholder?: string;
   required?: boolean;
   pattern?: string;
   value: any;
   onChange: (value: any) => void;
   name?: string;
-  rows?: number; // for textarea
-  error?: string; // 👈 added
-  maxLength?: number; // 👈 added
+  rows?: number;
+  error?: string;
+  maxLength?: number;
 }
 
 const LabelInput: React.FC<LabelInputProps> = ({
@@ -38,7 +39,145 @@ const LabelInput: React.FC<LabelInputProps> = ({
   rows = 3,
   error,
 }) => {
-  const errorStyle = error ? "p-invalid border-red-500" : ""; // PrimeReact `p-invalid`
+  const errorStyle = error ? "p-invalid border-red-500" : "";
+
+  const handleInstagramInput = (inputValue: string) => {
+    console.log("Instagram input received:", inputValue);
+
+    let processedValue = inputValue.trim();
+    let finalUrl = "";
+
+    // If it's already a full Instagram URL, use it as is
+    if (processedValue.includes("instagram.com/")) {
+      // Extract clean URL
+      const urlMatch = processedValue.match(
+        /(?:https?:\/\/)?(?:www\.)?instagram\.com\/([a-zA-Z0-9._]+)/
+      );
+      if (urlMatch) {
+        const username = urlMatch[1];
+        finalUrl = `https://www.instagram.com/${username}`;
+        console.log("Extracted URL from full link:", finalUrl);
+      } else {
+        finalUrl = processedValue;
+      }
+    } else {
+      // Handle username input
+      // Remove @ symbol if present
+      if (processedValue.startsWith("@")) {
+        processedValue = processedValue.slice(1);
+      }
+
+      // Clean the username - only allow valid Instagram characters
+      processedValue = processedValue.toLowerCase().replace(/[^a-z0-9._]/g, "");
+
+      // Instagram username restrictions
+      if (processedValue.length > 30) {
+        processedValue = processedValue.slice(0, 30);
+      }
+
+      // Convert username to full URL for backend
+      if (processedValue) {
+        finalUrl = `https://www.instagram.com/${processedValue}`;
+        console.log("Converted username to URL:", finalUrl);
+      }
+    }
+
+    console.log("Final value being sent to backend:", finalUrl);
+    onChange(finalUrl);
+  };
+
+  const handleInputChange = (inputValue: string) => {
+    let val = inputValue;
+
+    switch (type) {
+      case "email":
+        // Basic email validation - allow alphanumeric, @ . _ - +
+        val = val.toLowerCase().replace(/[^a-z0-9@._+-]/g, "");
+        if (maxLength) val = val.slice(0, maxLength);
+        break;
+
+      case "tel":
+        // Phone number - only numbers, max 10 digits
+        val = val.replace(/\D/g, "").slice(0, 10);
+        break;
+
+      case "url":
+        // Website URL - no spaces, basic URL characters
+        val = val.toLowerCase().replace(/\s/g, "");
+        if (maxLength) val = val.slice(0, maxLength);
+        break;
+
+      case "instagram":
+        // Handle Instagram input with special processing
+        handleInstagramInput(inputValue);
+        return; // Exit early since handleInstagramInput calls onChange
+
+      case "textarea":
+        // For descriptions - allow most characters but limit length
+        if (maxLength) val = val.slice(0, maxLength);
+        break;
+
+      case "text":
+      default:
+        // Handle specific labels
+        if (label === "GSTIN") {
+          // GSTIN format: 2 digits + 10 chars + 1 digit + 1 char + 1 digit
+          val = val
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, "")
+            .slice(0, 15);
+        } else if (label === "CIN") {
+          // CIN format: 21 characters alphanumeric
+          val = val
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, "")
+            .slice(0, 21);
+        } else if (
+          label.toLowerCase().includes("name") ||
+          label.toLowerCase().includes("person") ||
+          label.toLowerCase().includes("city") ||
+          label.toLowerCase().includes("state") ||
+          label.toLowerCase().includes("district")
+        ) {
+          // Names and location fields - only letters and spaces
+          val = val.replace(/[^a-zA-Z\s]/g, "");
+          if (maxLength) val = val.slice(0, maxLength);
+        } else if (
+          label.toLowerCase().includes("address") ||
+          label.toLowerCase().includes("designation")
+        ) {
+          // Address and designation - alphanumeric with common punctuation
+          val = val.replace(/[^a-zA-Z0-9\s,.-]/g, "");
+          if (maxLength) val = val.slice(0, maxLength);
+        } else if (
+          label.toLowerCase().includes("postal") ||
+          label.toLowerCase().includes("pincode") ||
+          label.toLowerCase().includes("zip")
+        ) {
+          // Postal/ZIP codes - only numbers, max 6 digits for Indian PIN
+          val = val.replace(/\D/g, "").slice(0, 6);
+        } else {
+          // Default text handling
+          if (maxLength) val = val.slice(0, maxLength);
+        }
+        break;
+    }
+
+    onChange(val);
+  };
+
+  // Helper function to display username in input field
+  const getDisplayValue = () => {
+    if (type === "instagram" && value) {
+      // If value is a full URL, extract username for display
+      if (value.includes("instagram.com/")) {
+        const match = value.match(/instagram\.com\/([a-zA-Z0-9._]+)/);
+        return match ? match[1] : value;
+      }
+      return value;
+    }
+    return value;
+  };
 
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -52,14 +191,12 @@ const LabelInput: React.FC<LabelInputProps> = ({
         <InputText
           name={name}
           value={value}
-          type="text" // use text to control length
-          maxLength={maxLength} // restrict length
+          type="text"
+          maxLength={maxLength}
           placeholder={placeholder}
           className={`w-full !rounded-lg ${errorStyle}`}
           onChange={(e) => {
-            // Only allow numbers
             let val = e.target.value.replace(/\D/g, "");
-            // Enforce maxLength
             if (maxLength) val = val.slice(0, maxLength);
             onChange(val);
           }}
@@ -68,42 +205,63 @@ const LabelInput: React.FC<LabelInputProps> = ({
         <Password
           name={name}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
           feedback={false}
           toggleMask
           className={`w-full !rounded-lg ${errorStyle}`}
         />
       ) : type === "textarea" ? (
-        <InputTextarea
-          name={name}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          rows={rows}
-          autoResize
-          className={`w-full !rounded-lg ${errorStyle}`}
-        />
+        <div className="relative">
+          <InputTextarea
+            name={name}
+            value={value}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder={placeholder}
+            rows={rows}
+            autoResize
+            className={`w-full !rounded-lg ${errorStyle}`}
+            maxLength={maxLength}
+          />
+          {maxLength && (
+            <div className="text-xs text-gray-500 mt-1 text-right">
+              {value?.length || 0}/{maxLength}
+            </div>
+          )}
+        </div>
+      ) : type === "instagram" ? (
+        <div className="relative">
+          <InputText
+            name={name}
+            value={getDisplayValue()}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder={placeholder}
+            className={`w-full !rounded-lg ${errorStyle}`}
+            maxLength={150} // Increased to accommodate URLs
+          />
+          {/* {value && (
+            <div className="text-xs text-gray-500 mt-1">
+              Backend will receive: {value}
+            </div>
+          )} */}
+        </div>
       ) : (
         <InputText
-          type="text"
+          type={type === "url" ? "url" : type === "email" ? "email" : "text"}
           name={name}
           value={value}
-          onChange={(e) => {
-            let val = e.target.value.toUpperCase(); // GSTIN/CIN are usually uppercase
-            if (label === "GSTIN") {
-              // Allow only 15 alphanumeric characters
-              val = val.replace(/[^A-Z0-9]/g, "").slice(0, 15);
-            } else if (label === "CIN") {
-              // Allow only 21 alphanumeric characters
-              val = val.replace(/[^A-Z0-9]/g, "").slice(0, 21);
-            }
-            onChange(val);
-          }}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
-          maxLength={label === "GSTIN" ? 15 : label === "CIN" ? 21 : undefined}
           className={`w-full !rounded-lg ${errorStyle}`}
+          maxLength={maxLength}
         />
+      )}
+
+      {/* Character count for specific fields */}
+      {type === "text" && maxLength && maxLength <= 50 && (
+        <div className="text-xs text-gray-500 mt-1 text-right">
+          {value?.length || 0}/{maxLength}
+        </div>
       )}
 
       {/* Error Message */}
@@ -113,3 +271,5 @@ const LabelInput: React.FC<LabelInputProps> = ({
 };
 
 export default LabelInput;
+
+

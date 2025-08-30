@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { Dialog } from "primereact/dialog";
-
 import { FileText, Download, Upload, X } from "lucide-react";
 
 interface DocumentViewerProps {
@@ -19,7 +18,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+
   // Handle file selection
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,22 +31,20 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
     }
   };
 
-  // Clean up object URL when component unmounts or file changes
+  // Clean up object URL
   React.useEffect(() => {
     return () => {
-      if (fileUrl) {
-        URL.revokeObjectURL(fileUrl);
-      }
+      if (fileUrl) URL.revokeObjectURL(fileUrl);
     };
   }, [fileUrl]);
 
-  // Custom header
+  // Header template
   const headerTemplate = (
-    <div className="flex justify-between p-3 items-center w-full bg-white border-b  border-gray-200">
+    <div className="flex justify-between p-3 items-center w-full bg-white border-b border-gray-200">
       <span className="text-sm font-semibold text-gray-800">{title}</span>
       <button
         onClick={onHide}
-        className=" hover:bg-gray-100 rounded-lg transition-colors"
+        className="hover:bg-gray-100 rounded-lg transition-colors"
         style={{ border: "none", background: "transparent" }}
       >
         <X size={20} className="text-gray-600" />
@@ -55,11 +52,11 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
     </div>
   );
 
-  // Footer
+  // Footer template
   const footer = (
-    <div className="flex justify-center mt-1 ">
+    <div className="flex justify-center mt-1 gap-4">
       <button
-        className="bg-black text-white  p-2 cursor-pointer    rounded-full border-none hover:bg-gray-800 flex items-center gap-2 transition-all duration-200"
+        className="bg-black text-white p-2 cursor-pointer rounded-full border-none hover:bg-gray-800 flex items-center gap-2 transition-all duration-200"
         onClick={() => {
           if (selectedFile) {
             const link = document.createElement("a");
@@ -77,21 +74,14 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
         disabled={!selectedFile && !url}
       >
         <Download className="w-[10px] h-[10px]" />
-        <p className="text-[10px]"> Download Document</p>
+        <p className="text-[10px]">Download Document</p>
       </button>
       {/* <button
-        onClick={() => setIsVisible(true)}
-        className="bg-black text-white text-[10px]  p-1 rounded-full"
+        onClick={() => fileInputRef.current?.click()}
+        className="bg-black text-white px-4 py-2 rounded-full border-none hover:bg-gray-800 flex items-center gap-2 transition-all duration-200"
       >
-        Open PDF Viewer
+        <Upload size={16} /> Select PDF File
       </button> */}
-
-      {/* DocumentViewer with local upload support */}
-      {/* <DocumentViewer
-        title="Local PDF Viewer"
-        visible={isVisible}
-        onHide={() => setIsVisible(false)}
-      /> */}
     </div>
   );
 
@@ -112,49 +102,49 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({
         closable={false}
         draggable={false}
         resizable={false}
-        contentStyle={{
-          overflow: "hidden",
-          width: "100%",
-
-          background: "#fff",
-        }}
+        contentStyle={{ overflow: "hidden", background: "#fff" }}
         footer={footer}
-        className="shadow-3xl no-scrollbar w-[50%]"
+        className="shadow-3xl no-scrollbar w-[90%] max-w-[900px]"
       >
-        <>
-          {fileUrl || url ? (
-            <div className="bg-white   rounded-lg overflow-hidden relative border border-gray-300">
-              <iframe
-                src={`${
-                  fileUrl || url
-                }#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                title={title}
-                frameBorder="0"
-                className="w-[calc(100%+2rem)] h-[calc(100vh-152px)] -m-1 bg-white  "
-                style={{ border: "none" }}
-              />
+        {fileUrl || url ? (
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "794px", // A4 width in px
+              margin: "0 auto",
+              aspectRatio: "210 / 297", // A4 ratio
+            }}
+          >
+            <iframe
+              src={`${fileUrl || url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+              title={title}
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "1px solid #ccc",
+                display: "block",
+              }}
+            />
+          </div>
+        ) : (
+          <div className="w-full h-full bg-white rounded-lg shadow-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-center p-8">
+            <div className="mb-8">
+              <FileText size={64} className="text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                No Document Selected
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Please select a PDF document to view
+              </p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-black text-white px-6 py-3 rounded-full border-none hover:bg-gray-800 flex items-center gap-2 transition-all duration-200"
+              >
+                <Upload size={16} /> Select PDF File
+              </button>
             </div>
-          ) : (
-            <div className="w-full h-full bg-white rounded-lg shadow-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-center p-8">
-              <div className="mb-8 ">
-                <FileText size={64} className="text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  No Document Selected
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Please select a PDF document to view
-                </p>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="bg-black text-white px-6 py-3 rounded-full border-none hover:bg-gray-800 flex items-center gap-2 transition-all duration-200"
-                >
-                  <Upload size={16} />
-                  Select PDF File
-                </button>
-              </div>
-            </div>
-          )}
-        </>
+          </div>
+        )}
       </Dialog>
     </>
   );

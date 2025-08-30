@@ -30,9 +30,9 @@ const BrandRegistration: React.FC = () => {
     },
     document: {
       showDocument: true,
-      addressProof: { url: "#", downloadUrl: "#" },
-      gstDocument: { url: "#", downloadUrl: "#" },
-      panDocument: { url: "#", downloadUrl: "#" },
+      addressProof: { url: "", downloadUrl: "#" },
+      gstDocument: { url: "", downloadUrl: "#" },
+      panDocument: { url: "", downloadUrl: "#" },
     },
     feedback: {
       currentStatus: "Review in Progress",

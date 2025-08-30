@@ -11,7 +11,11 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+  }>({});
 
   const handleClick = (e: any) => {
     e.preventDefault();
@@ -19,14 +23,20 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     let newErrors: { name?: string; email?: string; phone?: string } = {};
 
     if (!name.trim()) newErrors.name = "Name is required *";
+    else if (!/^[a-zA-Z\s]+$/.test(name))
+      newErrors.name = "Only letters are allowed *";
+
     if (!email.trim()) newErrors.email = "Email is required *";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Enter a valid email *";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email))
+      newErrors.email = "Enter a valid email *";
+
     if (!phone.trim()) newErrors.phone = "Phone is required *";
-    else if (phone.length !== 10) newErrors.phone = "Phone must be 10 digits *";
+    else if (!/^[0-9]{10}$/.test(phone))
+      newErrors.phone = "Phone must be exactly 10 digits *";
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length > 0) return; // stop if errors
+    if (Object.keys(newErrors).length > 0) return;
 
     const to = "zadroit.development@gmail.com";
     const subject = encodeURIComponent("Contact Form Submission");
@@ -37,7 +47,7 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     const mailtoLink = `mailto:${to}?subject=${subject}&body=${body}`;
     window.location.href = mailtoLink;
 
-    // Clear form & errors
+    // Reset
     setName("");
     setEmail("");
     setPhone("");
@@ -58,17 +68,27 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
       >
         {/* Left side - Image */}
         <div className="lg:w-1/2 md:w-1/2 hidden lg:flex items-center justify-center bg-black">
-          <img src={image} alt="Contact" className="w-[90%] h-[90%] object-cover" />
+          <img
+            src={image}
+            alt="Contact"
+            className="w-[90%] h-[90%] object-cover"
+          />
         </div>
 
         {/* Right side - Form */}
         <div className="w-full lg:w-1/2 p-6 lg:p-10 bg-[#000] flex flex-col justify-between">
           <div className="lg:hidden md:hidden mb-6 flex justify-center">
-            <img src={image} alt="Contact" className="w-full h-48 object-cover rounded-lg" />
+            <img
+              src={image}
+              alt="Contact"
+              className="w-full h-48 object-cover rounded-lg"
+            />
           </div>
 
           <div>
-            <h1 className="text-2xl lg:text-3xl font-poppins text-[#ffb300] mb-4">Contact Us</h1>
+            <h1 className="text-2xl lg:text-3xl font-poppins text-[#ffb300] mb-4">
+              Contact Us
+            </h1>
             <p className="text-gray-300 mb-6 leading-relaxed text-[16px] lg:text-base">
               Got questions or need support? Our team is here to help you with
               orders, brands, and collaborations. Reach out and let&apos;s make
@@ -90,7 +110,11 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <label htmlFor="name" className="floating-label">
                   Name
                 </label>
-                {errors.name && <p className="text-[#ffb300] text-[10px] mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-[#ffb300] text-[10px] mt-1">
+                    {errors.name}
+                  </p>
+                )}
               </div>
 
               {/* Email */}
@@ -106,7 +130,11 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <label htmlFor="email" className="floating-label">
                   Email Address
                 </label>
-                {errors.email && <p className="text-[#ffb300] text-[10px] mt-1">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-[#ffb300] text-[10px] mt-1">
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               {/* Phone */}
@@ -129,7 +157,11 @@ const Contact: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <label htmlFor="phone" className="floating-label">
                   Phone Number
                 </label>
-                {errors.phone && <p className="text-[#ffb300] text-[10px] mt-1">{errors.phone}</p>}
+                {errors.phone && (
+                  <p className="text-[#ffb300] text-[10px] mt-1">
+                    {errors.phone}
+                  </p>
+                )}
               </div>
 
               {/* Submit */}

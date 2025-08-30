@@ -4,7 +4,7 @@ import ContactInformation from "./ContactInformation";
 import TaxInformation from "./TaxInformation";
 import WareHouseInformation from "./WareHouseInformation";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { Button } from "primereact/button";
+
 import {
   isValidCIN,
   isValidEmail,
@@ -381,16 +381,15 @@ const Registration: React.FC = () => {
 
         {/* Footer buttons */}
         <div className="flex gap-3 pt-4">
-          <Button rounded style={{ background: "#E8E8E8", border: "none" }}>
+          <button className="bg-[#E8E8E8] rounded-full p-3  text-black border-none ">
             Save Draft
-          </Button>
-          <Button
-            rounded
-            style={{ background: "black", color: "white", border: "none" }}
+          </button>
+          <button
+            className="bg-black rounded-full  p-3 text-white border-none cursor-pointer hover:bg-[#000] hover:text-[#ffb300] transition-all duration-300"
             onClick={() => handleSubmit()}
           >
             Submit to Review
-          </Button>
+          </button>
         </div>
       </div>
     </div>

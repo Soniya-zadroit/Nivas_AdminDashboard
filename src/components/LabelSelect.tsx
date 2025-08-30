@@ -28,7 +28,7 @@ const LabelSelect: React.FC<LabelSelectProps> = ({
         value={value}
         options={options}
         onChange={(e) => onChange(e.value)}
-        placeholder="Select"
+        placeholder="Select Category"
         className={`w-full !rounded-lg ${errorStyle}`}
         required={required}
       />

@@ -4,7 +4,7 @@ import LabelSelect from "../../../components/LabelSelect";
 import type { BrandRegistrationInterface } from "./Registration";
 import { RadioButton } from "primereact/radiobutton";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertMessage } from "../BrandRegistration";
+import { MissingInfoAlertCount } from "../BrandRegistration";
 
 type WareHouseValue = BrandRegistrationInterface["wareHouseInfo"];
 
@@ -25,12 +25,65 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
 }) => {
   const warehouseRef = useRef<HTMLDivElement>(null);
 
+  // Validation functions
+  const validatePincode = (pincode: string): boolean => {
+    return /^\d{6}$/.test(pincode);
+  };
+
+  // Indian states list (same as ContactInformation)
+  const indianStates = [
+    { label: "Select State", value: "" },
+    {
+      label: "Andaman and Nicobar Islands",
+      value: "Andaman and Nicobar Islands",
+    },
+    { label: "Andhra Pradesh", value: "Andhra Pradesh" },
+    { label: "Arunachal Pradesh", value: "Arunachal Pradesh" },
+    { label: "Assam", value: "Assam" },
+    { label: "Bihar", value: "Bihar" },
+    { label: "Chandigarh", value: "Chandigarh" },
+    { label: "Chhattisgarh", value: "Chhattisgarh" },
+    {
+      label: "Dadra and Nagar Haveli and Daman and Diu",
+      value: "Dadra and Nagar Haveli and Daman and Diu",
+    },
+    { label: "Delhi", value: "Delhi" },
+    { label: "Goa", value: "Goa" },
+    { label: "Gujarat", value: "Gujarat" },
+    { label: "Haryana", value: "Haryana" },
+    { label: "Himachal Pradesh", value: "Himachal Pradesh" },
+    { label: "Jammu and Kashmir", value: "Jammu and Kashmir" },
+    { label: "Jharkhand", value: "Jharkhand" },
+    { label: "Karnataka", value: "Karnataka" },
+    { label: "Kerala", value: "Kerala" },
+    { label: "Ladakh", value: "Ladakh" },
+    { label: "Lakshadweep", value: "Lakshadweep" },
+    { label: "Madhya Pradesh", value: "Madhya Pradesh" },
+    { label: "Maharashtra", value: "Maharashtra" },
+    { label: "Manipur", value: "Manipur" },
+    { label: "Meghalaya", value: "Meghalaya" },
+    { label: "Mizoram", value: "Mizoram" },
+    { label: "Nagaland", value: "Nagaland" },
+    { label: "Odisha", value: "Odisha" },
+    { label: "Puducherry", value: "Puducherry" },
+    { label: "Punjab", value: "Punjab" },
+    { label: "Rajasthan", value: "Rajasthan" },
+    { label: "Sikkim", value: "Sikkim" },
+    { label: "Tamil Nadu", value: "Tamil Nadu" },
+    { label: "Telangana", value: "Telangana" },
+    { label: "Tripura", value: "Tripura" },
+    { label: "Uttar Pradesh", value: "Uttar Pradesh" },
+    { label: "Uttarakhand", value: "Uttarakhand" },
+    { label: "West Bengal", value: "West Bengal" },
+  ];
+
   const handleToggle = (hasWarehouse: boolean) => {
     onChange({ wareHouse: hasWarehouse });
 
     // Clear fields when toggled to "No"
     if (!hasWarehouse) {
       onChange({
+        wareHouse: false,
         wareHouseAddress: "",
         wareHouseCity: "",
         wareHouseDistrict: "",
@@ -65,8 +118,8 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
 
       {/* Radio buttons */}
       <div className="space-y-2">
-        <p className="text-sm text-gray-600">
-          Is there a warehouse owned or managed by your brand?
+        <p className="text-sm text-gray-600 font-medium">
+          Is there a warehouse owned or managed by your brand? 
         </p>
         <div className="flex items-center gap-6">
           {[
@@ -102,6 +155,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
               value={value.wareHouseAddress}
               onChange={(val: string) => onChange({ wareHouseAddress: val })}
               error={errors?.wareHouseAddress}
+              maxLength={200}
             />
             <LabelInput
               label="City/Town"
@@ -111,6 +165,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
               value={value.wareHouseCity}
               onChange={(val: string) => onChange({ wareHouseCity: val })}
               error={errors?.wareHouseCity}
+              maxLength={50}
             />
           </div>
 
@@ -124,16 +179,23 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
               value={value.wareHouseDistrict}
               onChange={(val: string) => onChange({ wareHouseDistrict: val })}
               error={errors?.wareHouseDistrict}
+              maxLength={50}
             />
             <LabelInput
-              label="Postal code"
+              label="Postal Code"
               type="text"
               required
               placeholder="Enter Postal code/Pincode"
               value={value.wareHouseZipCode}
               onChange={(val: string) => onChange({ wareHouseZipCode: val })}
-              error={errors?.wareHouseZipCode}
-              maxLength={6} // limit to 6 digits
+              error={
+                errors?.wareHouseZipCode ||
+                (!validatePincode(value.wareHouseZipCode) &&
+                value.wareHouseZipCode
+                  ? "Please enter a valid 6-digit pincode"
+                  : undefined)
+              }
+              maxLength={6}
             />
           </div>
 
@@ -144,19 +206,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
               required
               value={value.wareHouseState}
               onChange={(val: string) => onChange({ wareHouseState: val })}
-              options={[
-                { label: "Select State", value: "" },
-                { label: "Andhra Pradesh", value: "Andhra Pradesh" },
-                { label: "Assam", value: "Assam" },
-                { label: "Bihar", value: "Bihar" },
-                { label: "Delhi", value: "Delhi" },
-                { label: "Gujarat", value: "Gujarat" },
-                { label: "Karnataka", value: "Karnataka" },
-                { label: "Maharashtra", value: "Maharashtra" },
-                { label: "Rajasthan", value: "Rajasthan" },
-                { label: "Tamil Nadu", value: "Tamil Nadu" },
-                { label: "Telangana", value: "Telangana" },
-              ]}
+              options={indianStates}
               error={errors?.wareHouseState}
             />
           </div>
@@ -166,7 +216,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
       {/* Missing info alert */}
       {showValidate && !validateStatus && (
         <div className="w-fit">
-          <MissingInfoAlertMessage />
+          <MissingInfoAlertCount count={Object.keys(errors || {}).length} />
         </div>
       )}
     </div>

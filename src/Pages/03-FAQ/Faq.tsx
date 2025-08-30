@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -54,9 +54,22 @@ const Faq: React.FC<FaqModalProps> = ({ isOpen, onClose, onContactClick }) => {
   const contentRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const toggleItem = (id: number) => {
-    setOpenItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setOpenItems((prev) => {
+      let updated;
+      if (prev.includes(id)) {
+        updated = prev.filter((item) => item !== id);
+      } else {
+        updated = [...prev, id];
+        // scroll into view after a short delay for animation
+        setTimeout(() => {
+          contentRefs.current[id]?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 300);
+      }
+      return updated;
+    });
   };
 
   if (!isOpen) return null;
@@ -106,7 +119,7 @@ const Faq: React.FC<FaqModalProps> = ({ isOpen, onClose, onContactClick }) => {
             {faqData.topQuestions}
           </h2>
 
-          <div className="space-y-1 max-h-[calc(95vh-200px)] sm:max-h-96 overflow-y-hidden scrollbar-hide cursor-pointer">
+          <div className="space-y-1 max-h-[calc(95vh-200px)] sm:max-h-96 overflow-y-auto scrollbar-hide cursor-pointer">
             {faqData.faqs.map((faq) => {
               const isOpen = openItems.includes(faq.id);
               return (
