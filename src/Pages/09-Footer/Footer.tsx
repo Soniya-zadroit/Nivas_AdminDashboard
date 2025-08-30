@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Instagram, Facebook, Twitter, Linkedin } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MdCheckCircle } from "react-icons/md";
 import logo from "../../assets/Images/Yellowlogo3.png";
 import { FaAndroid, FaApple, FaWindows } from "react-icons/fa6";
@@ -16,12 +16,14 @@ import Aboutus from "../12-AboutUs/Aboutus";
 const Footer: React.FC = () => {
   const [isBrandOpen, setIsBrandOpen] = useState(false);
   const [isInvestorOpen, setIsInvestorOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>(""); // track active tab
+  const [activeTab, setActiveTab] = useState<string>("");
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
-
   const [email, setEmail] = useState("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ const Footer: React.FC = () => {
     }
 
     // Mailto
-    const to = "zadroit.development@gmail.com"; // your target email
+    const to = "zadroit.development@gmail.com";
     const subject = encodeURIComponent("Newsletter Subscription");
     const body = encodeURIComponent(
       `Hello,\n\nMy email is: ${email}\nI would like to know more about your services.\n\nThanks.`
@@ -47,19 +49,17 @@ const Footer: React.FC = () => {
 
     window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
 
-    setEmail(""); // Reset input
+    setEmail("");
   };
 
   const handleBrandClick = () => {
     setIsBrandOpen(true);
     setActiveTab("brand");
-    // closeMobileMenu();
   };
 
   const handleInvestorClick = () => {
     setIsInvestorOpen(true);
     setActiveTab("investor");
-    // closeMobileMenu();
   };
 
   const handleContactClick = () => {
@@ -77,12 +77,47 @@ const Footer: React.FC = () => {
     setActiveTab("faq");
   };
 
+  const handleLogoClick = () => {
+    if (location.pathname === "/") {
+      // Scroll to top of home page
+      const homeContainer = document.querySelector(".home-scroll-container");
+      if (homeContainer) {
+        homeContainer.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } else {
+      // Navigate to home page
+      navigate("/");
+    }
+    setActiveTab("/");
+  };
+
+  const handleCompanyClick = () => {
+    if (location.pathname === "/") {
+      // Scroll to company section
+      const companySection = document.getElementById("company");
+      if (companySection) {
+        companySection.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // Navigate to home page and then scroll to company
+      navigate("/");
+      setTimeout(() => {
+        const companySection = document.getElementById("company");
+        if (companySection) {
+          companySection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+    setActiveTab("company");
+  };
+
   const socials = [
     { icon: TbBrandInstagramFilled, link: "#" },
     { icon: IoLogoFacebook, link: "#" },
     { icon: BiLogoTwitter, link: "#" },
     { icon: RiLinkedinFill, link: "#" },
   ];
+
   return (
     <footer className="bg-black text-white relative">
       {/* Main Footer */}
@@ -92,14 +127,9 @@ const Footer: React.FC = () => {
           <div className="flex flex-col justify-between">
             {/* Logo + Tagline */}
             <div className="space-y-6 ">
-              <a
-                href="/"
-                onClick={() => {
-                  setActiveTab("/");
-                }}
-              >
+              <button onClick={handleLogoClick}>
                 <img src={logo} alt="logo" className="w-28 mb-5" />
-              </a>
+              </button>
 
               <p className="text-[#747474] text-sm max-w-sm poppins">
                 Heard Of Celebrity To Consumer Platform? <br />
@@ -144,14 +174,7 @@ const Footer: React.FC = () => {
           <div className="flex gap-16 poppins">
             <div>
               <h3 className="text-white font-medium mb-4 cursor-pointer">
-                <a
-                  href="#company"
-                  onClick={() => {
-                    setActiveTab("company");
-                  }}
-                >
-                  Company
-                </a>
+                <button onClick={handleCompanyClick}>Company</button>
               </h3>
               <ul className="space-y-3 text-sm ">
                 <li>

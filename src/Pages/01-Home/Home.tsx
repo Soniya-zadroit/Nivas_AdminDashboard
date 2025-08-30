@@ -7,10 +7,11 @@ import homeTab from "../../assets/Home/HomeTab.png";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  
   return (
     <>
       <div
-        className="h-screen w-full overflow-y-scroll snap-y snap-mandatory no-scrollbar"
+        className="home-scroll-container h-screen w-full overflow-y-scroll snap-y snap-mandatory no-scrollbar"
         style={{ scrollBehavior: "smooth" }}
       >
         <section className="relative w-full h-screen snap-start overflow-hidden">

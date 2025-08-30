@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/Images/logo.png";
 import Contact from "../04-Contact/Contact";
 import Faq from "../03-FAQ/Faq";
@@ -8,7 +8,40 @@ const Header: React.FC = () => {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>(""); // track active tab
+  const [activeTab, setActiveTab] = useState<string>(""); 
+  const location = useLocation();
+
+  // Check if we're on home page and which section is visible
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      return;
+    }
+
+    const handleScroll = () => {
+      const companySection = document.getElementById("company");
+      if (companySection) {
+        const rect = companySection.getBoundingClientRect();
+        const isCompanyVisible = rect.top <= 100 && rect.bottom >= 100;
+        
+        if (isCompanyVisible) {
+          setActiveTab("company");
+        } else {
+          setActiveTab("");
+        }
+      }
+    };
+
+    // Listen to scroll events on the main container
+    const homeContainer = document.querySelector('.home-scroll-container');
+    if (homeContainer) {
+      homeContainer.addEventListener('scroll', handleScroll);
+      handleScroll(); // Check initial state
+      
+      return () => {
+        homeContainer.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [location.pathname]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -30,6 +63,34 @@ const Header: React.FC = () => {
     closeMobileMenu();
   };
 
+  const handleCompanyClick = () => {
+    if (location.pathname === "/") {
+      // Smooth scroll to company section
+      const companySection = document.getElementById("company");
+      if (companySection) {
+        companySection.scrollIntoView({ behavior: "smooth" });
+      }
+      setActiveTab("company");
+    }
+    closeMobileMenu();
+  };
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      // Scroll to top of home page
+      const homeContainer = document.querySelector('.home-scroll-container');
+      if (homeContainer) {
+        homeContainer.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } else {
+      // Navigate to home page
+      window.location.href = "/";
+    }
+    setActiveTab("");
+    closeMobileMenu();
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 bg-transparent">
@@ -37,12 +98,7 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link
               to="/"
-              onClick={(e) => {
-                e.preventDefault(); // prevent full reload
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                setActiveTab("");
-                closeMobileMenu();
-              }}
+              onClick={handleLogoClick}
             >
               <img
                 src={logo}
@@ -53,22 +109,18 @@ const Header: React.FC = () => {
           </div>
 
           <div className="hidden md:flex space-x-8 poppins text-white">
-            <a
-              href="#company"
-              className={`hover:text-black ${
+            <button
+              onClick={handleCompanyClick}
+              className={`hover:text-black transition-colors ${
                 activeTab === "company" ? "text-black font-semibold" : ""
               }`}
-              onClick={() => {
-                setActiveTab("company");
-                closeMobileMenu();
-              }}
             >
               Company
-            </a>
+            </button>
 
             <button
               onClick={handleContactClick}
-              className={`hover:text-black ${
+              className={`hover:text-black transition-colors ${
                 activeTab === "contact" ? "text-black font-semibold" : ""
               }`}
             >
@@ -76,7 +128,7 @@ const Header: React.FC = () => {
             </button>
             <button
               onClick={handleFaqClick}
-              className={`hover:text-black ${
+              className={`hover:text-black transition-colors ${
                 activeTab === "faq" ? "text-black font-semibold" : ""
               }`}
             >
@@ -106,22 +158,18 @@ const Header: React.FC = () => {
           >
             ✕
           </button>
-          <a
-            href="#company"
-            className={`hover:text-gray-300 pt-8 ${
+          <button
+            onClick={handleCompanyClick}
+            className={`hover:text-gray-300 pt-8 transition-colors ${
               activeTab === "company" ? "text-black font-semibold" : ""
             }`}
-            onClick={() => {
-              setActiveTab("company");
-              closeMobileMenu();
-            }}
           >
             Company
-          </a>
+          </button>
 
           <button
             onClick={handleContactClick}
-            className={`hover:text-gray-300 ${
+            className={`hover:text-gray-300 transition-colors ${
               activeTab === "contact" ? "text-black font-semibold" : ""
             }`}
           >
@@ -129,7 +177,7 @@ const Header: React.FC = () => {
           </button>
           <button
             onClick={handleFaqClick}
-            className={`hover:text-gray-300 ${
+            className={`hover:text-gray-300 transition-colors ${
               activeTab === "faq" ? "text-black font-semibold" : ""
             }`}
           >

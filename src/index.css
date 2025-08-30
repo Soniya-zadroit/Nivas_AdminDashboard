@@ -44,7 +44,18 @@ select:-webkit-autofill {
 .comfortaa {
   font-family: "Comfortaa", sans-serif;
 }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.home-scroll-container {
+  scroll-behavior: smooth;
+}
 /* Optional: dark mode override */
 @media (prefers-color-scheme: dark) {
   input:-webkit-autofill,
