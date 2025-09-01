@@ -54,14 +54,27 @@ const BrandRegistration: React.FC = () => {
   //     : setActiveStep(1);
   // }, [setActiveStep]);
 
+  // useEffect(() => {
+  //   console.log("applicationStatus", applicationStatus);
+  //   if (applicationStatus === 1 || applicationStatus === 2) {
+  //     console.log("BrandRegistration.tsx -------------------------- >  60  ");
+  //     setActiveStep(1);
+  //   } else {
+  //     console.log("BrandRegistration.tsx -------------------------- >  64  ");
+  //     setActiveStep(2);
+  //     getRegistrationStatus();
+  //   }
+  // }, [applicationStatus]);
   useEffect(() => {
     console.log("applicationStatus", applicationStatus);
+
     if (applicationStatus === 1 || applicationStatus === 2) {
-      console.log("BrandRegistration.tsx -------------------------- >  60  ");
-      setActiveStep(1);
-    } else {
-      console.log("BrandRegistration.tsx -------------------------- >  64  ");
-      setActiveStep(2);
+      setActiveStep(1); // Brand Registration
+    } else if (applicationStatus === 3) {
+      setActiveStep(2); // Review
+      getRegistrationStatus();
+    } else if (applicationStatus === 4 || applicationStatus === 5) {
+      setActiveStep(3); // Approval Status
       getRegistrationStatus();
     }
   }, [applicationStatus]);
