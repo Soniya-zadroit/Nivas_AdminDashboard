@@ -4,10 +4,37 @@ import Company from "../02-Company/Company";
 import { FaAngleRight } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import homeTab from "../../assets/Home/HomeTab.png";
+import axios from "axios";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  
+
+  const getStart = async () => {
+    try {
+      await axios
+        .post(
+          import.meta.env.VITE_API_URL + "/brand/brandRegistration/getStatus",
+          {
+            applicationId: sessionStorage.getItem("applicationId"),
+          },
+
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response: any) => {
+          const data = response.data.data;
+          const status = data.applicationStatus;
+          navigate("/brandregistration", { state: status });
+        });
+    } catch (error) {
+      console.log("Home.tsx / error / 16 -------------------  ", error);
+    }
+  };
+
   return (
     <>
       <div
@@ -64,7 +91,7 @@ const Home: React.FC = () => {
                   text-sm sm:text-base poppins cursor-pointer
                 "
                 onClick={() => {
-                  navigate("/brandregistration");
+                  getStart();
                 }}
               >
                 Get Started <FaAngleRight className="ml-1 mt-[2px]" />

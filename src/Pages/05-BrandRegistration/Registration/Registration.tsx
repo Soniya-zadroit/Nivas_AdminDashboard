@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BrandInformation from "./BrandInformation";
 import ContactInformation from "./ContactInformation";
 import TaxInformation from "./TaxInformation";
@@ -14,6 +14,8 @@ import {
   isValidUrl,
   str,
 } from "../../../helpers/Helper";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export interface BrandInfoInterface {
   brandName: string;
@@ -57,9 +59,13 @@ export interface BrandRegistrationInterface {
   contactInformation: ContactInfoInterface;
   taxInformation: TaxInformationInterface;
   wareHouseInfo: WareHouseInfoInterface;
+  applicationId: string | null;
+  SaveDraft: boolean;
 }
 
 const Registration: React.FC = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState<BrandRegistrationInterface>({
     brandInformation: {
       brandName: "",
@@ -94,6 +100,8 @@ const Registration: React.FC = () => {
       wareHouseZipCode: "",
       wareHouseState: "",
     },
+    applicationId: sessionStorage.getItem("applicationId"),
+    SaveDraft: false,
   });
 
   const [formErrors, setFormErrors] = useState<{
@@ -214,7 +222,13 @@ const Registration: React.FC = () => {
 
     // === Warehouse Info (only if wareHouse is true) ===
     if (formData.wareHouseInfo.wareHouse) {
+      console.log("Registration.tsx -------------------------- >  222  ");
+      console.log(
+        "Registration.tsx / formData.wareHouseInfo.wareHouseAddress / 223 -------------------  ",
+        formData.wareHouseInfo.wareHouseAddress
+      );
       if (!str(formData.wareHouseInfo.wareHouseAddress)) {
+        console.log("Registration.tsx -------------------------- >  224  ");
         addErr(
           "wareHouseInfo",
           "wareHouseAddress",
@@ -253,18 +267,122 @@ const Registration: React.FC = () => {
       }
     }
 
+    console.log("Registration.tsx -------------------------- >  261  ");
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (saveType: boolean) => {
+    console.log(
+      "Registration.tsx / formData / 261 -------------------  ",
+      formData
+    );
     setSubmitReview(true);
-    if (validateForm()) {
+    validateForm();
+    const validationCheck = saveType ? true : validateForm();
+    if (validationCheck) {
       console.log("Form submitted successfully", formData);
+      const BrandData = {
+        ...formData,
+        SaveDraft: saveType,
+        applicationId: sessionStorage.getItem("applicationId") ?? "", // ensure string
+      };
+      console.log(
+        "Registration.tsx / BrandData / 273 -------------------  ",
+        BrandData
+      );
+      try {
+        await axios
+          .post(
+            import.meta.env.VITE_API_URL + "/brand/brandRegistration/storeData",
+            BrandData, // send directly, not { BrandData }
+            {
+              headers: {
+                Authorization: localStorage.getItem("token") || "",
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((response: any) => {
+            console.log(
+              "Registration.tsx / response / 288 -------------------  ",
+              response
+            );
+            const data = response.data.data;
+            console.log(
+              "Registration.tsx / data / 294 -------------------  ",
+              data
+            );
+            if (data.status) {
+              console.log(
+                "Registration.tsx -------------------------- >  318  "
+              );
+              if (!saveType) {
+                console.log(
+                  "Registration.tsx -------------------------- >  322  "
+                );
+                navigate("/brandregistration", { state: 3 });
+              }
+            }
+          });
+      } catch (error) {
+        console.log(
+          "Registration.tsx / error / 273 -------------------  ",
+          error
+        );
+      }
     } else {
       console.log("Validation failed", formErrors);
     }
   };
+
+  const getApplicationDetails = async () => {
+    console.log("Registration.tsx -------------------------- >  275  ");
+    try {
+      await axios
+        .post(
+          import.meta.env.VITE_API_URL + "/brand/brandRegistration/getFormData",
+          {
+            applicationId: sessionStorage.getItem("applicationId"),
+          },
+
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response: any) => {
+          // const data = decrypt(
+          //   response.data[1],
+          //   response.data[0],
+          //   import.meta.env.VITE_ENCRYPTION_KEY
+          // );
+
+          // localStorage.setItem("token", "Bearer " + data.token);
+          const data = response.data.data;
+          console.log(
+            "Registration.tsx / data / 298 -------------------  ",
+            data
+          );
+          if (data.status) {
+            setFormData(data.brandData);
+          }
+        });
+    } catch (error) {
+      console.log(
+        "Registration.tsx / error / 278 -------------------  ",
+        error
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log("Registration.tsx -------------------------- >  317  ");
+    getApplicationDetails();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -283,6 +401,7 @@ const Registration: React.FC = () => {
 
       <ContactInformation
         value={formData.contactInformation}
+        brandName={formData.brandInformation.brandName}
         onChange={(next) =>
           setFormData((prev) => ({
             ...prev,
@@ -296,6 +415,7 @@ const Registration: React.FC = () => {
 
       <TaxInformation
         value={formData.taxInformation}
+        brandName={formData.brandInformation.brandName}
         onChange={(patch) =>
           setFormData((prev) => ({
             ...prev,
@@ -316,7 +436,10 @@ const Registration: React.FC = () => {
           }))
         }
         showValidate={submitReview}
-        validateStatus={!formErrors.wareHouseInfo}
+        validateStatus={
+          !formErrors.wareHouseInfo ||
+          Object.keys(formErrors.wareHouseInfo).length === 0
+        }
         errors={formErrors.wareHouseInfo}
       />
 
@@ -381,12 +504,15 @@ const Registration: React.FC = () => {
 
         {/* Footer buttons */}
         <div className="flex gap-3 pt-4">
-          <button className="bg-[#E8E8E8] rounded-full p-3  text-black border-none ">
+          <button
+            className="bg-[#E8E8E8] rounded-full p-3  text-black border-none "
+            onClick={() => handleSubmit(true)}
+          >
             Save Draft
           </button>
           <button
             className="bg-black rounded-full  p-3 text-white border-none cursor-pointer hover:bg-[#000] hover:text-[#ffb300] transition-all duration-300"
-            onClick={() => handleSubmit()}
+            onClick={() => handleSubmit(false)}
           >
             Submit to Review
           </button>

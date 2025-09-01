@@ -5,7 +5,8 @@ interface LabelSelectProps {
   label: string;
   value: string | number | null;
   onChange: React.Dispatch<React.SetStateAction<any>>;
-  options: { label: string; value: string }[];
+  // options: { label: string; value: number | null }[];
+  options: { label: string; value: string | number | null }[];
   required?: boolean;
   error?: string; // ✅ add error prop
 }

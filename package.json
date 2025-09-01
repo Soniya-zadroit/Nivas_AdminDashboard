@@ -12,6 +12,7 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "@tailwindcss/vite": "^4.1.12",
+    "axios": "^1.11.0",
     "lucide-react": "^0.540.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.7",

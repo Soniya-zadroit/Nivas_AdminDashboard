@@ -1,32 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CustomStepper from "../../components/CustomStepper";
 import Registration from "./Registration/Registration";
 import { InfoIcon } from "@phosphor-icons/react";
 import BrandReview, { type BrandReviewData } from "./BrandReview";
 import { useStepperContext } from "./StepperHandler/StepperProvider";
 import { numberToWords } from "../../helpers/Helper";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 const BrandRegistration: React.FC = () => {
+  const applicationStatus = useLocation().state;
+  console.log(
+    "BrandRegistration.tsx / applicationStatus / 11 -------------------  ",
+    applicationStatus
+  );
   const { activeStep, setActiveStep, stepContent } = useStepperContext();
-
-
-  let brandReviewData: BrandReviewData = {
+  // const [brandReviewData, setBrandReviewData] =
+  //   useState<BrandReviewData | null>(null);
+  const [brandReviewData, setBrandReviewData] = useState<BrandReviewData>({
     brandApplicationStatus: {
-      status: 3,
-      statusName: "Approved",
-      applicationId: "BR-2025-1001",
-      submitDate: "10 Aug,2025",
-      processTime: "3-5 Business Days",
+      status: 0,
+      statusName: "",
+      applicationId: "",
+      submitDate: "",
+      lastDate: "",
+      processTime: "",
     },
     brandInformation: {
-      brandLogo: "public/vite.svg",
-      brandName: "HRX by Hrithik Roshan",
-      brandCategory: "Fashion & Clothing",
-      cinNumber: "U12345MH2020PLC123456",
-      contactPerson: "Hrithik Roshan",
-      submitDate: "10 Aug,2025",
-      phoneNumber: "+91 9876543210",
-      email: "hrx@example.com",
+      brandLogo: "",
+      brandName: "",
+      brandCategory: "",
+      cinNumber: "",
+      contactPerson: "",
+      submitDate: "",
+      phoneNumber: "",
+      email: "",
     },
     document: {
       showDocument: true,
@@ -35,17 +43,60 @@ const BrandRegistration: React.FC = () => {
       panDocument: { url: "", downloadUrl: "#" },
     },
     feedback: {
-      currentStatus: "Review in Progress",
-      reviewContent:
-        "Your application is currently under review by our compliance team. We are verifying your brand details and business details. You will receive an update within 2-3 business days.",
+      currentStatus: "",
+      reviewContent: "",
     },
-  };
+  });
+
+  // useEffect(() => {
+  //   brandReviewData.brandApplicationStatus.status != 3
+  //     ? setActiveStep(2)
+  //     : setActiveStep(1);
+  // }, [setActiveStep]);
 
   useEffect(() => {
-    brandReviewData.brandApplicationStatus.status != 3
-      ? setActiveStep(2)
-      : setActiveStep(1);
-  }, [setActiveStep]);
+    console.log("applicationStatus", applicationStatus);
+    if (applicationStatus === 1 || applicationStatus === 2) {
+      console.log("BrandRegistration.tsx -------------------------- >  60  ");
+      setActiveStep(1);
+    } else {
+      console.log("BrandRegistration.tsx -------------------------- >  64  ");
+      setActiveStep(2);
+      getRegistrationStatus();
+    }
+  }, [applicationStatus]);
+
+  const getRegistrationStatus = async () => {
+    try {
+      await axios
+        .post(
+          import.meta.env.VITE_API_URL +
+            "/brand/brandRegistration/getRegistrationStatus",
+          {
+            applicationId: sessionStorage.getItem("applicationId"),
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token") || "",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response: any) => {
+          const data = response.data.data;
+          console.log(
+            "BrandRegistration.tsx / data / 75 -------------------  ",
+            data
+          );
+          setBrandReviewData(data.brandData);
+        });
+    } catch (error) {
+      console.log(
+        "BrandRegistration.tsx / error / 63 -------------------  ",
+        error
+      );
+    }
+  };
 
   return (
     <div className="w-full space-y-6 poppins">

@@ -3,7 +3,6 @@ import React from "react";
 import { Route, Routes, Outlet, useLocation } from "react-router-dom";
 
 import Home from "../Pages/01-Home/Home";
-
 import SellerRegistration from "../Pages/05-BrandRegistration/BrandRegistration";
 import { Sidebar } from "../Sidebar";
 import { StepperProvider } from "../Pages/05-BrandRegistration/StepperHandler/StepperProvider";
@@ -13,10 +12,32 @@ import Login from "../Pages/07-Login/Login";
 import PasswordPage from "../Pages/08-Password/PasswordPage";
 import Footer from "../Pages/09-Footer/Footer";
 import InvestorPage from "../Pages/10-Investor/InvestorPage";
-import Header from "../Pages/00-Header/Header";
 import BrandPage from "../Pages/11-BrandEnquiry/BrandPage";
-import Aboutus from "../Pages/12-AboutUs/Aboutus";
 import AboutusPage from "../Pages/12-AboutUs/AboutusPage";
+import Header from "../Pages/00-Header/Header";
+
+// --------------------- HashHandler Component ---------------------
+const HashHandler: React.FC = () => {
+  React.useEffect(() => {
+    const hash = window.location.hash; // e.g., "#id:AP202508310001"
+
+    if (hash.startsWith("#id:")) {
+      const applicationId = hash.replace("#id:", "");
+      sessionStorage.setItem("applicationId", applicationId);
+
+      // Remove hash from URL without reloading
+      window.history.replaceState(
+        null,
+        "",
+        window.location.origin + window.location.pathname
+      );
+    }
+  }, []);
+
+  return null; // No UI
+};
+
+// --------------------- Layouts ---------------------
 
 // Layout with sidebar
 const Layout: React.FC = () => (
@@ -40,18 +61,20 @@ const BrandRegistrationLayout: React.FC = () => (
   </StepperProvider>
 );
 
-// Global wrapper for header visibility
+// Global wrapper for header/footer visibility
 const Wrapper: React.FC = () => {
   const location = useLocation();
 
   // Only show header for these paths
   const showHeaderOn = ["/", "/company", "/faq", "/contact", "/about"];
   const shouldShowHeader = showHeaderOn.includes(location.pathname);
+
   const showFooterOn = ["/", "/company", "/faq", "/contact", "/about"];
   const shouldShowFooter = showFooterOn.includes(location.pathname);
 
   return (
     <>
+      <HashHandler /> {/* Handles applicationId from URL */}
       {shouldShowHeader && <Header />}
       <Outlet />
       {shouldShowFooter && <Footer />}
@@ -59,13 +82,13 @@ const Wrapper: React.FC = () => {
   );
 };
 
+// --------------------- Main Routes ---------------------
 const Mainroutes: React.FC = () => {
   return (
     <Routes>
-      {/* Wrapper decides header visibility */}
+      {/* Wrapper decides header/footer visibility */}
       <Route element={<Wrapper />}>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/company" element={<Company />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/password" element={<PasswordPage />} />
         <Route path="/faq" element={<FaqPage />} />

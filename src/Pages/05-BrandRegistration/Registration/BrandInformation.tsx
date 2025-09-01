@@ -9,6 +9,22 @@ import {
   MissingInfoAlertDocuments,
 } from "../BrandRegistration";
 import DropImage from "../../../components/DropImage";
+import axios from "axios";
+import DropzoneLogoUpload from "../../../components/DropZoneLogoUpload";
+
+export interface DragAndDropUploadBoxProps {
+  label: string;
+  accept?: string;
+  required?: boolean;
+  maxSizeMB?: number;
+  helperText?: string;
+  buttonLabel?: string;
+  showPreview?: boolean;
+  error?: string;
+  // 👇 add this
+  value?: string | File | null;
+  onChange?: (file: File | null) => void;
+}
 
 type BrandInformationValue = BrandRegistrationInterface["brandInformation"];
 
@@ -79,10 +95,10 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
           value={value.productCategory}
           onChange={(val: string) => onChange({ productCategory: val })}
           options={[
-            { label: "Select Category", value: "" },
-            { label: "Fashion & Apparel", value: "fashion" },
-            { label: "Beauty & Wellness", value: "beauty" },
-            { label: "Others", value: "others" },
+            { label: "Select Category", value: null },
+            { label: "Fashion & Apparel", value: 1 },
+            { label: "Beauty & Wellness", value: 2 },
+            { label: "Others", value: 3 },
           ]}
           error={errors?.productCategory}
           required
@@ -90,20 +106,50 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
       </div>
 
       {/* Brand Logo */}
-      <DropImage
+      {/* <DropImage
         label="Brand logo *"
         accept="image/*"
+        required
+        value={value.brandLogoPath ?? undefined} // string | undefined
+        brandName={value.brandName} // pass brandName from state
+        onChange={(_url, _brandName, filePath) => {
+          console.log(
+            "BrandInformation.tsx / filePath / 114 -------------------  ",
+            filePath
+          );
+          if (!value.brandName) {
+            alert("Please enter Brand Name before uploading the logo");
+            return;
+          }
+          onChange({ brandLogoPath: filePath ?? undefined });
+        }}
+        showPreview
+        error={errors?.brandLogoPath}
+      /> */}
+
+      <DropzoneLogoUpload
+        label="Brand logo *"
+        brandName={value.brandName}
+        required
         // Uncomment when implementing file handling
-        // required
-        // value={value.brandLogoPath}
-        // onChange={(file: File | null) => {
-        //   onChange({ brandLogoPath: file });
-        // }}
-        // maxSizeMB={2}
-        // helperText="Upload brand logo (Max 2MB, formats: JPG, PNG, SVG)"
+        value={value.brandLogoPath}
+        onChange={(_url, _brandName, filePath) => {
+          console.log(
+            "ContactInformation.tsx / filePath / 226 -------------------  ",
+            filePath
+          );
+          // if (!value.brandName) {
+          //   alert("Please enter Brand Name before uploading the logo");
+          //   return;
+          // }
+          onChange({ brandLogoPath: filePath ?? undefined });
+        }}
+        accept=".jpg,.jpeg,.png"
+        // maxSizeMB={5}
+        // helperText="Upload any scanned address proof documents (Aadhar Card, Passport, Utility Bill, etc.) - Max 5MB"
         // buttonLabel="Choose File"
         // showPreview
-        // error={errors?.brandLogoPath}
+        // error={errors?.proofDocument}
       />
 
       {/* Brand Description */}

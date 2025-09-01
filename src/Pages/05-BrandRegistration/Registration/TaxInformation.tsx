@@ -3,12 +3,16 @@ import LabelInput from "../../../components/LabelInput";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import type { BrandRegistrationInterface } from "./Registration";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertCount, MissingInfoAlertDocuments } from "../BrandRegistration";
+import {
+  MissingInfoAlertCount,
+  MissingInfoAlertDocuments,
+} from "../BrandRegistration";
 
 type TaxInformationValue = BrandRegistrationInterface["taxInformation"];
 
 interface TaxInformationProps {
   value: TaxInformationValue;
+  brandName: string;
   onChange: (patch: Partial<TaxInformationValue>) => void;
   showValidate: boolean;
   validateStatus: boolean;
@@ -17,6 +21,7 @@ interface TaxInformationProps {
 
 const TaxInformation: React.FC<TaxInformationProps> = ({
   value,
+  brandName,
   onChange,
   showValidate,
   validateStatus,
@@ -57,7 +62,12 @@ const TaxInformation: React.FC<TaxInformationProps> = ({
             placeholder="Enter GSTIN"
             value={value.gstinNumber}
             onChange={(val: string) => onChange({ gstinNumber: val })}
-            error={errors?.gstinNumber || (!validateGSTIN(value.gstinNumber) && value.gstinNumber ? "Please enter a valid GSTIN (15 characters)" : undefined)}
+            error={
+              errors?.gstinNumber ||
+              (!validateGSTIN(value.gstinNumber) && value.gstinNumber
+                ? "Please enter a valid GSTIN (15 characters)"
+                : undefined)
+            }
             maxLength={15}
           />
           {/* <p className="text-xs text-gray-500">
@@ -73,7 +83,12 @@ const TaxInformation: React.FC<TaxInformationProps> = ({
             placeholder="Enter CIN"
             value={value.cinNumber}
             onChange={(val: string) => onChange({ cinNumber: val })}
-            error={errors?.cinNumber || (!validateCIN(value.cinNumber) && value.cinNumber ? "Please enter a valid CIN (21 characters)" : undefined)}
+            error={
+              errors?.cinNumber ||
+              (!validateCIN(value.cinNumber) && value.cinNumber
+                ? "Please enter a valid CIN (21 characters)"
+                : undefined)
+            }
             maxLength={21}
           />
           {/* <p className="text-xs text-gray-500">
@@ -86,12 +101,25 @@ const TaxInformation: React.FC<TaxInformationProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DropzoneUpload
           label="GST Registration Certificate"
+          brandName={brandName}
           required
           // Uncomment when implementing file handling
-          // value={value.gstDocument}
+          value={value.gstDocumant}
           // onChange={(fileOrPath: File | string | null) =>
           //   onChange({ gstDocument: (fileOrPath as any) ?? "" })
           // }
+          onChange={(_url, _brandName, filePath) => {
+            console.log(
+              "TaxInformation.tsx / filePath / 111 -------------------  ",
+              filePath
+            );
+
+            // if (!value.brandName) {
+            //   alert("Please enter Brand Name before uploading the logo");
+            //   return;
+            // }
+            onChange({ gstDocumant: filePath ?? undefined });
+          }}
           accept=".pdf,.jpg,.jpeg,.png"
           // maxSizeMB={5}
           // helperText="Upload a scanned copy of your GST Registration Certificate (Max 5MB)"
@@ -102,13 +130,25 @@ const TaxInformation: React.FC<TaxInformationProps> = ({
 
         <DropzoneUpload
           label="PAN Card"
+          brandName={brandName}
           required
           // Uncomment when implementing file handling
-          // value={value.panDocument}
+          value={value.panDocument}
           // onChange={(fileOrPath: File | string | null) =>
           //   onChange({ panDocument: (fileOrPath as any) ?? "" })
           // }
           accept=".pdf,.jpg,.jpeg,.png"
+          onChange={(_url, _brandName, filePath) => {
+            console.log(
+              "TaxInformation.tsx / filePath / 140 -------------------  ",
+              filePath
+            );
+            // if (!value.brandName) {
+            //   alert("Please enter Brand Name before uploading the logo");
+            //   return;
+            // }
+            onChange({ panDocument: filePath ?? undefined });
+          }}
           // maxSizeMB={5}
           // helperText="Upload a scanned copy of your PAN Card (Max 5MB)"
           // buttonLabel="Choose File"

@@ -119,7 +119,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
       {/* Radio buttons */}
       <div className="space-y-2">
         <p className="text-sm text-gray-600 font-medium">
-          Is there a warehouse owned or managed by your brand? 
+          Is there a warehouse owned or managed by your brand?
         </p>
         <div className="flex items-center gap-6">
           {[

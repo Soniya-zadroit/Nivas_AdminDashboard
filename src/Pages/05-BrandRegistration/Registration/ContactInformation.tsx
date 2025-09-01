@@ -4,12 +4,16 @@ import LabelSelect from "../../../components/LabelSelect";
 import DropzoneUpload from "../../../components/DropZoneFileUpload";
 import type { BrandRegistrationInterface } from "./Registration";
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import { MissingInfoAlertCount, MissingInfoAlertDocuments } from "../BrandRegistration";
+import {
+  MissingInfoAlertCount,
+  MissingInfoAlertDocuments,
+} from "../BrandRegistration";
 
 type ContactInformationValue = BrandRegistrationInterface["contactInformation"];
 
 interface ContactInformationProps {
   value: ContactInformationValue;
+  brandName: string;
   onChange: (patch: Partial<ContactInformationValue>) => void;
   showValidate: boolean;
   validateStatus: boolean;
@@ -18,11 +22,16 @@ interface ContactInformationProps {
 
 const ContactInformation: React.FC<ContactInformationProps> = ({
   value,
+  brandName,
   onChange,
   showValidate,
   validateStatus,
   errors,
 }) => {
+  console.log(
+    "ContactInformation.tsx / brandName / 25 -------------------  ",
+    brandName
+  );
   // Validation functions
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,14 +49,20 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
   // Indian states list
   const indianStates = [
     { label: "Select State", value: "" },
-    { label: "Andaman and Nicobar Islands", value: "Andaman and Nicobar Islands" },
+    {
+      label: "Andaman and Nicobar Islands",
+      value: "Andaman and Nicobar Islands",
+    },
     { label: "Andhra Pradesh", value: "Andhra Pradesh" },
     { label: "Arunachal Pradesh", value: "Arunachal Pradesh" },
     { label: "Assam", value: "Assam" },
     { label: "Bihar", value: "Bihar" },
     { label: "Chandigarh", value: "Chandigarh" },
     { label: "Chhattisgarh", value: "Chhattisgarh" },
-    { label: "Dadra and Nagar Haveli and Daman and Diu", value: "Dadra and Nagar Haveli and Daman and Diu" },
+    {
+      label: "Dadra and Nagar Haveli and Daman and Diu",
+      value: "Dadra and Nagar Haveli and Daman and Diu",
+    },
     { label: "Delhi", value: "Delhi" },
     { label: "Goa", value: "Goa" },
     { label: "Gujarat", value: "Gujarat" },
@@ -75,7 +90,7 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
     { label: "Tripura", value: "Tripura" },
     { label: "Uttar Pradesh", value: "Uttar Pradesh" },
     { label: "Uttarakhand", value: "Uttarakhand" },
-    { label: "West Bengal", value: "West Bengal" }
+    { label: "West Bengal", value: "West Bengal" },
   ];
 
   return (
@@ -123,7 +138,12 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           placeholder="+91 000 000 0000"
           value={value.phoneNumber}
           onChange={(val: string) => onChange({ phoneNumber: val })}
-          error={errors?.phoneNumber || (!validatePhone(value.phoneNumber) && value.phoneNumber ? "Please enter a valid 10-digit mobile number" : undefined)}
+          error={
+            errors?.phoneNumber ||
+            (!validatePhone(value.phoneNumber) && value.phoneNumber
+              ? "Please enter a valid 10-digit mobile number"
+              : undefined)
+          }
           maxLength={10}
         />
 
@@ -134,7 +154,12 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           placeholder="Enter your email address"
           value={value.email}
           onChange={(val: string) => onChange({ email: val })}
-          error={errors?.email || (!validateEmail(value.email) && value.email ? "Please enter a valid email address" : undefined)}
+          error={
+            errors?.email ||
+            (!validateEmail(value.email) && value.email
+              ? "Please enter a valid email address"
+              : undefined)
+          }
           maxLength={100}
         />
       </div>
@@ -172,7 +197,12 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           placeholder="Enter Postal code/Pincode"
           value={value.zipCode}
           onChange={(val: string) => onChange({ zipCode: val })}
-          error={errors?.zipCode || (!validatePincode(value.zipCode) && value.zipCode ? "Please enter a valid 6-digit pincode" : undefined)}
+          error={
+            errors?.zipCode ||
+            (!validatePincode(value.zipCode) && value.zipCode
+              ? "Please enter a valid 6-digit pincode"
+              : undefined)
+          }
           maxLength={6}
         />
 
@@ -189,12 +219,21 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
       {/* Address proof upload */}
       <DropzoneUpload
         label="Address Proof"
+        brandName={brandName}
         required
         // Uncomment when implementing file handling
-        // value={value.proofDocument}
-        // onChange={(fileOrPath: File | string | null) =>
-        //   onChange({ proofDocument: (fileOrPath as any) ?? "" })
-        // }
+        value={value.proofDocument}
+        onChange={(_url, _brandName, filePath) => {
+          console.log(
+            "ContactInformation.tsx / filePath / 226 -------------------  ",
+            filePath
+          );
+          // if (!value.brandName) {
+          //   alert("Please enter Brand Name before uploading the logo");
+          //   return;
+          // }
+          onChange({ proofDocument: filePath ?? undefined });
+        }}
         accept=".pdf,.jpg,.jpeg,.png"
         // maxSizeMB={5}
         // helperText="Upload any scanned address proof documents (Aadhar Card, Passport, Utility Bill, etc.) - Max 5MB"
@@ -209,7 +248,7 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
           <MissingInfoAlertCount count={Object.keys(errors || {}).length} />
         </div>
       )}
-      
+
       {showValidate && errors?.proofDocument && (
         <div className="w-fit mt-2">
           <MissingInfoAlertDocuments />

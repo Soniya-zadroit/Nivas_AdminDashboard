@@ -15,6 +15,7 @@ export interface BrandApplicationStatus {
   statusName: string;
   applicationId: string;
   submitDate: string;
+  lastDate: string;
   processTime: string;
 }
 
@@ -74,25 +75,26 @@ const BrandReview: React.FC<Props> = ({
   const [selectedDoc, setSelectedDoc] = useState<{
     title: string;
     url: string;
+    downloadUrl: string;
   } | null>(null);
 
   const statusConfig: Record<
     number,
     { label: string; className: string; rightLabel: string; icon: any }
   > = {
-    1: {
+    3: {
       label: "Pending Review",
       className: "bg-yellow-400 text-black",
       rightLabel: "Estimated Processing Time",
       icon: <ClockIcon size={18} weight="fill" />,
     },
-    2: {
+    5: {
       label: "Rejected",
       className: "bg-red-500 text-white",
       rightLabel: "Last updated:",
       icon: <XCircleIcon size={18} weight="fill" />,
     },
-    3: {
+    4: {
       label: "Approved",
       className: "bg-green-500 text-white",
       rightLabel: "Last updated:",
@@ -106,6 +108,10 @@ const BrandReview: React.FC<Props> = ({
     },
   };
 
+  console.log(
+    "BrandReview.tsx / brandReviewData.brandApplicationStatus / 110 -------------------  ",
+    brandReviewData.brandApplicationStatus
+  );
   const status = brandReviewData.brandApplicationStatus.status;
   const config = statusConfig[status] || statusConfig[0];
 
@@ -135,10 +141,15 @@ const BrandReview: React.FC<Props> = ({
     },
   ];
 
-  const handleViewDocument = (docTitle: string, docUrl: string) => {
+  const handleViewDocument = (
+    docTitle: string,
+    docUrl: string,
+    downloadUrl: string
+  ) => {
     setSelectedDoc({
       title: docTitle,
       url: docUrl,
+      downloadUrl: downloadUrl,
     });
   };
 
@@ -283,7 +294,7 @@ const BrandReview: React.FC<Props> = ({
                     className="text-sm font-medium hover:underline text-black"
                     onClick={(e) => {
                       e.preventDefault();
-                      handleViewDocument(doc.title, doc.url);
+                      handleViewDocument(doc.title, doc.url, doc.downloadUrl);
                     }}
                   >
                     View Document
@@ -308,6 +319,7 @@ const BrandReview: React.FC<Props> = ({
         <DocumentViewer
           title={selectedDoc.title}
           url={selectedDoc.url}
+          downloadUrl={selectedDoc.downloadUrl}
           visible={!!selectedDoc}
           onHide={() => setSelectedDoc(null)}
         />
@@ -332,28 +344,29 @@ const BrandReview: React.FC<Props> = ({
             </div>
           </div>
         </div>
-
-        <div
-          className="flex flex-col md:flex-row gap-4 mt-4"
-          hidden={status === 3}
-        >
-          <Button
-            rounded
-            style={{ background: "black", color: "white", border: "none" }}
-            onClick={() => setActiveStep(1)}
+        {shouldShowDocuments && (
+          <div
+            className="flex flex-col md:flex-row gap-4 mt-4"
+            hidden={status === 3}
           >
-            {status === 2 ? "Resubmit Application" : "Edit Application"}
-          </Button>
-          <Button
-            rounded
-            style={{ background: "white", border: "1px solid black" }}
-          >
-            <span role="img" aria-label="support">
-              🎧
-            </span>
-            Contact Support
-          </Button>
-        </div>
+            <Button
+              rounded
+              style={{ background: "black", color: "white", border: "none" }}
+              onClick={() => setActiveStep(1)}
+            >
+              {status === 5 ? "Resubmit Application" : "Edit Application"}
+            </Button>
+            <Button
+              rounded
+              style={{ background: "white", border: "1px solid black" }}
+            >
+              <span role="img" aria-label="support">
+                🎧
+              </span>
+              Contact Support
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
