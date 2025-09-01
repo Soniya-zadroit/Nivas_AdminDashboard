@@ -128,7 +128,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
       /> */}
 
       <DropzoneLogoUpload
-        label="Brand logo *"
+        label="Brand logo "
         brandName={value.brandName}
         required
         // Uncomment when implementing file handling
