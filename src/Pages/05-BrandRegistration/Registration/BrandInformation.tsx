@@ -170,6 +170,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
         <LabelInput
           label="Website URL"
           type="url"
+          required
           placeholder="https://yourbrand.com"
           value={value.websiteURL}
           onChange={(val: string) => {
@@ -196,7 +197,7 @@ const BrandInformation: React.FC<BrandInformationProps> = ({
         />
 
         <LabelInput
-          label="Insta handle/Storefront*"
+          label="Insta handle/Storefront"
           type="instagram"
           placeholder="Enter your Instagram handle"
           value={value.instragram}

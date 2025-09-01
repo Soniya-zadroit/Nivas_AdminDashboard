@@ -65,12 +65,12 @@ const BrandReview: React.FC<Props> = ({
   setActiveStep,
   activeStep = 2,
 }) => {
-  console.log("Full brandReviewData:", brandReviewData);
-  console.log("Status object:", brandReviewData?.brandApplicationStatus);
-  console.log(
-    "Status name:",
-    brandReviewData?.brandApplicationStatus?.statusName
-  );
+  // console.log("Full brandReviewData:", brandReviewData);
+  // console.log("Status object:", brandReviewData?.brandApplicationStatus);
+  // console.log(
+  //   "Status name:",
+  //   brandReviewData?.brandApplicationStatus?.statusName
+  // );
 
   const [selectedDoc, setSelectedDoc] = useState<{
     title: string;

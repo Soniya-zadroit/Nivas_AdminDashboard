@@ -15,8 +15,7 @@ const BrandRegistration: React.FC = () => {
     applicationStatus
   );
   const { activeStep, setActiveStep, stepContent } = useStepperContext();
-  // const [brandReviewData, setBrandReviewData] =
-  //   useState<BrandReviewData | null>(null);
+  
   const [brandReviewData, setBrandReviewData] = useState<BrandReviewData>({
     brandApplicationStatus: {
       status: 0,
@@ -48,23 +47,18 @@ const BrandRegistration: React.FC = () => {
     },
   });
 
-  // useEffect(() => {
-  //   brandReviewData.brandApplicationStatus.status != 3
-  //     ? setActiveStep(2)
-  //     : setActiveStep(1);
-  // }, [setActiveStep]);
+  // Function to determine the correct step based on status
+  const getStepFromStatus = (status: number): number => {
+    if (status === 1 || status === 2) {
+      return 1; // Brand Registration
+    } else if (status === 3) {
+      return 2; // Review
+    } else if (status === 4 || status === 5) {
+      return 3; // Approval Status
+    }
+    return 1; // Default to Brand Registration
+  };
 
-  // useEffect(() => {
-  //   console.log("applicationStatus", applicationStatus);
-  //   if (applicationStatus === 1 || applicationStatus === 2) {
-  //     console.log("BrandRegistration.tsx -------------------------- >  60  ");
-  //     setActiveStep(1);
-  //   } else {
-  //     console.log("BrandRegistration.tsx -------------------------- >  64  ");
-  //     setActiveStep(2);
-  //     getRegistrationStatus();
-  //   }
-  // }, [applicationStatus]);
   useEffect(() => {
     console.log("applicationStatus", applicationStatus);
 
@@ -76,33 +70,48 @@ const BrandRegistration: React.FC = () => {
     } else if (applicationStatus === 4 || applicationStatus === 5) {
       setActiveStep(3); // Approval Status
       getRegistrationStatus();
+    } else {
+      // If no applicationStatus or unknown status, fetch data first
+      getRegistrationStatus();
     }
   }, [applicationStatus]);
 
   const getRegistrationStatus = async () => {
     try {
-      await axios
-        .post(
-          import.meta.env.VITE_API_URL +
-            "/brand/brandRegistration/getRegistrationStatus",
-          {
-            applicationId: sessionStorage.getItem("applicationId"),
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL +
+          "/brand/brandRegistration/getRegistrationStatus",
+        {
+          applicationId: sessionStorage.getItem("applicationId"),
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "Content-Type": "application/json",
           },
-          {
-            headers: {
-              Authorization: localStorage.getItem("token") || "",
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((response: any) => {
-          const data = response.data.data;
-          console.log(
-            "BrandRegistration.tsx / data / 75 -------------------  ",
-            data
-          );
-          setBrandReviewData(data.brandData);
-        });
+        }
+      );
+
+      const data = response.data.data;
+      console.log(
+        "BrandRegistration.tsx / data / 75 -------------------  ",
+        data
+      );
+      
+      setBrandReviewData(data.brandData);
+      
+      // Set the active step based on the actual status from backend
+      const backendStatus = data.brandData.brandApplicationStatus.status;
+      const correctStep = getStepFromStatus(backendStatus);
+      
+      console.log(
+        "BrandRegistration.tsx / backendStatus / correctStep -------------------  ",
+        backendStatus,
+        correctStep
+      );
+      
+      setActiveStep(correctStep);
+
     } catch (error) {
       console.log(
         "BrandRegistration.tsx / error / 63 -------------------  ",

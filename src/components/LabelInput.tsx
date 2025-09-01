@@ -41,6 +41,12 @@ const LabelInput: React.FC<LabelInputProps> = ({
 }) => {
   const errorStyle = error ? "p-invalid border-red-500" : "";
 
+  // Generate unique random name to prevent autofill
+  const randomName = React.useMemo(
+    () => `field_${Math.random().toString(36).substr(2, 9)}`,
+    []
+  );
+
   const handleInstagramInput = (inputValue: string) => {
     console.log("Instagram input received:", inputValue);
 
@@ -187,14 +193,34 @@ const LabelInput: React.FC<LabelInputProps> = ({
       </label>
 
       {/* Input Components */}
+      {/* Hidden decoy input to catch autofill */}
+      <input
+        type="text"
+        name={name}
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          width: "1px",
+          height: "1px",
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+        tabIndex={-1}
+        autoComplete="on"
+      />
+
       {type === "number" ? (
         <InputText
-          name={name}
+          name={randomName}
           value={value}
           type="text"
           maxLength={maxLength}
           placeholder={placeholder}
           className={`w-full !rounded-lg ${errorStyle}`}
+          autoComplete="new-field"
+          data-form-type="other"
+          readOnly
+          onFocus={(e) => e.target.removeAttribute("readOnly")}
           onChange={(e) => {
             let val = e.target.value.replace(/\D/g, "");
             if (maxLength) val = val.slice(0, maxLength);
@@ -203,18 +229,21 @@ const LabelInput: React.FC<LabelInputProps> = ({
         />
       ) : type === "password" ? (
         <Password
-          name={name}
+          name={randomName}
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
           feedback={false}
           toggleMask
           className={`w-full !rounded-lg ${errorStyle}`}
+          autoComplete="new-password"
+          readOnly
+          onFocus={(e) => e.target.removeAttribute("readOnly")}
         />
       ) : type === "textarea" ? (
         <div className="relative">
           <InputTextarea
-            name={name}
+            name={randomName}
             value={value}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder={placeholder}
@@ -222,6 +251,9 @@ const LabelInput: React.FC<LabelInputProps> = ({
             autoResize
             className={`w-full !rounded-lg ${errorStyle}`}
             maxLength={maxLength}
+            autoComplete="new-field"
+            readOnly
+            onFocus={(e) => e.target.removeAttribute("readOnly")}
           />
           {maxLength && (
             <div className="text-xs text-gray-500 mt-1 text-right">
@@ -232,36 +264,32 @@ const LabelInput: React.FC<LabelInputProps> = ({
       ) : type === "instagram" ? (
         <div className="relative">
           <InputText
-            name={name}
+            name={randomName}
             value={getDisplayValue()}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder={placeholder}
             className={`w-full !rounded-lg ${errorStyle}`}
-            maxLength={150} // Increased to accommodate URLs
+            maxLength={150}
+            autoComplete="new-field"
+            data-form-type="other"
+            readOnly
+            onFocus={(e) => e.target.removeAttribute("readOnly")}
           />
-          {/* {value && (
-            <div className="text-xs text-gray-500 mt-1">
-              Backend will receive: {value}
-            </div>
-          )} */}
         </div>
       ) : (
         <InputText
-          type={type === "url" ? "url" : type === "email" ? "email" : "text"}
-          name={name}
+          type="text"
+          name={randomName}
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
           className={`w-full !rounded-lg ${errorStyle}`}
           maxLength={maxLength}
+          autoComplete="new-field"
+          data-form-type="other"
+          readOnly
+          onFocus={(e) => e.target.removeAttribute("readOnly")}
         />
-      )}
-
-      {/* Character count for specific fields */}
-      {type === "text" && maxLength && maxLength <= 50 && (
-        <div className="text-xs text-gray-500 mt-1 text-right">
-          {value?.length || 0}/{maxLength}
-        </div>
       )}
 
       {/* Error Message */}
@@ -271,5 +299,3 @@ const LabelInput: React.FC<LabelInputProps> = ({
 };
 
 export default LabelInput;
-
-

@@ -249,11 +249,11 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
         </div>
       )}
 
-      {showValidate && errors?.proofDocument && (
+      {/* {showValidate && errors?.proofDocument && (
         <div className="w-fit mt-2">
           <MissingInfoAlertDocuments />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

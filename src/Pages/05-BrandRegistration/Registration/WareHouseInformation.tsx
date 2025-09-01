@@ -117,7 +117,7 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
       </div>
 
       {/* Radio buttons */}
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <p className="text-sm text-gray-600 font-medium">
           Is there a warehouse owned or managed by your brand?
         </p>
@@ -133,6 +133,33 @@ const WareHouseInformation: React.FC<WareHouseInformationProps> = ({
                 value={opt.value}
                 checked={value.wareHouse === opt.value}
                 onChange={(e) => handleToggle(e.value as boolean)}
+              />
+              <label htmlFor={opt.id} className="cursor-pointer">
+                {opt.label}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div> */}
+
+      <div className="space-y-2">
+        <p className="text-sm text-gray-600 font-medium">
+          Is there a warehouse owned or managed by your brand?
+        </p>
+        <div className="flex items-center gap-6">
+          {[
+            { id: "wh-yes", label: "Yes", value: true },
+            { id: "wh-no", label: "No", value: false },
+          ].map((opt) => (
+            <div key={opt.id} className="flex items-center gap-2">
+              <input
+                type="radio"
+                id={opt.id}
+                name="hasWarehouse"
+                value={String(opt.value)}
+                checked={value.wareHouse === opt.value}
+                onChange={() => handleToggle(opt.value)}
+                className="h-4 w-4 text-[#d1a216] border-gray-300 focus:ring-blue-500"
               />
               <label htmlFor={opt.id} className="cursor-pointer">
                 {opt.label}

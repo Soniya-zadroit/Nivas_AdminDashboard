@@ -147,8 +147,6 @@ const Registration: React.FC = () => {
       addErr("brandInformation", "websiteURL", "Invalid website URL");
     }
 
-    // (brandDescription / websiteURL / instragram treated as optional for now)
-
     // === Contact Information (complete) ===
     if (!str(formData.contactInformation.contactPerson)) {
       addErr(
@@ -196,7 +194,7 @@ const Registration: React.FC = () => {
       );
     }
 
-    // === Tax Information ===
+    // === Tax Information - CRITICAL VALIDATION FOR GSTIN AND CIN ===
     if (!str(formData.taxInformation.gstinNumber)) {
       addErr("taxInformation", "gstinNumber", "GSTIN is required");
     } else if (!isValidGSTIN(formData.taxInformation.gstinNumber)) {
@@ -222,13 +220,7 @@ const Registration: React.FC = () => {
 
     // === Warehouse Info (only if wareHouse is true) ===
     if (formData.wareHouseInfo.wareHouse) {
-      console.log("Registration.tsx -------------------------- >  222  ");
-      console.log(
-        "Registration.tsx / formData.wareHouseInfo.wareHouseAddress / 223 -------------------  ",
-        formData.wareHouseInfo.wareHouseAddress
-      );
       if (!str(formData.wareHouseInfo.wareHouseAddress)) {
-        console.log("Registration.tsx -------------------------- >  224  ");
         addErr(
           "wareHouseInfo",
           "wareHouseAddress",
@@ -267,122 +259,130 @@ const Registration: React.FC = () => {
       }
     }
 
-    console.log("Registration.tsx -------------------------- >  261  ");
-
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  // Enhanced validation specifically for GSTIN and CIN
+  const validateGSTINAndCIN = (): boolean => {
+    const { gstinNumber, cinNumber } = formData.taxInformation;
+    
+    // Check if both fields have values
+    if (!str(gstinNumber) || !str(cinNumber)) {
+      return false;
+    }
+
+    // Validate GSTIN and CIN using helper functions
+    const isGSTINValid = isValidGSTIN(gstinNumber);
+    const isCINValid = isValidCIN(cinNumber);
+
+    return isGSTINValid && isCINValid;
+  };
+
   const handleSubmit = async (saveType: boolean) => {
-    console.log(
-      "Registration.tsx / formData / 261 -------------------  ",
-      formData
-    );
+    console.log("Form submission attempted with data:", formData);
     setSubmitReview(true);
-    validateForm();
-    const validationCheck = saveType ? true : validateForm();
-    if (validationCheck) {
-      console.log("Form submitted successfully", formData);
-      const BrandData = {
-        ...formData,
-        SaveDraft: saveType,
-        applicationId: sessionStorage.getItem("applicationId") ?? "", // ensure string
-      };
-      console.log(
-        "Registration.tsx / BrandData / 273 -------------------  ",
-        BrandData
-      );
-      try {
-        await axios
-          .post(
-            import.meta.env.VITE_API_URL + "/brand/brandRegistration/storeData",
-            BrandData, // send directly, not { BrandData }
-            {
-              headers: {
-                Authorization: localStorage.getItem("token") || "",
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then((response: any) => {
-            console.log(
-              "Registration.tsx / response / 288 -------------------  ",
-              response
-            );
-            const data = response.data.data;
-            console.log(
-              "Registration.tsx / data / 294 -------------------  ",
-              data
-            );
-            if (data.status) {
-              console.log(
-                "Registration.tsx -------------------------- >  318  "
-              );
-              if (!saveType) {
-                console.log(
-                  "Registration.tsx -------------------------- >  322  "
-                );
-                navigate("/brandregistration", { state: 3 });
-              }
-            }
-          });
-      } catch (error) {
-        console.log(
-          "Registration.tsx / error / 273 -------------------  ",
-          error
-        );
-      }
+
+    // For draft saving, allow submission without full validation
+    if (saveType) {
+      console.log("Saving as draft - skipping validation");
+      await submitForm(saveType);
+      return;
+    }
+
+    // For final submission, run full validation
+    const isFormValid = validateForm();
+    
+    // Additional check for GSTIN and CIN
+    const areGSTINAndCINValid = validateGSTINAndCIN();
+
+    if (!areGSTINAndCINValid) {
+      console.log("GSTIN or CIN validation failed");
+      alert("Please enter valid GSTIN and CIN numbers before submitting.");
+      return;
+    }
+
+    if (isFormValid && areGSTINAndCINValid) {
+      console.log("Form validation passed - submitting");
+      await submitForm(saveType);
     } else {
-      console.log("Validation failed", formErrors);
+      console.log("Form validation failed:", formErrors);
+      alert("Please fix all validation errors before submitting.");
+    }
+  };
+
+  const submitForm = async (saveType: boolean) => {
+    const BrandData = {
+      ...formData,
+      SaveDraft: saveType,
+      applicationId: sessionStorage.getItem("applicationId") ?? "",
+    };
+
+    console.log("Submitting form data:", BrandData);
+
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL + "/brand/brandRegistration/storeData",
+        BrandData,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("API Response:", response);
+      const data = response.data.data;
+
+      if (data.status) {
+        console.log("Form submitted successfully");
+        if (!saveType) {
+          navigate("/brandregistration", { state: 3 });
+        } else {
+          alert("Draft saved successfully!");
+        }
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("An error occurred while submitting the form. Please try again.");
     }
   };
 
   const getApplicationDetails = async () => {
-    console.log("Registration.tsx -------------------------- >  275  ");
     try {
-      await axios
-        .post(
-          import.meta.env.VITE_API_URL + "/brand/brandRegistration/getFormData",
-          {
-            applicationId: sessionStorage.getItem("applicationId"),
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL + "/brand/brandRegistration/getFormData",
+        {
+          applicationId: sessionStorage.getItem("applicationId"),
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+            "Content-Type": "application/json",
           },
-
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((response: any) => {
-          // const data = decrypt(
-          //   response.data[1],
-          //   response.data[0],
-          //   import.meta.env.VITE_ENCRYPTION_KEY
-          // );
-
-          // localStorage.setItem("token", "Bearer " + data.token);
-          const data = response.data.data;
-          console.log(
-            "Registration.tsx / data / 298 -------------------  ",
-            data
-          );
-          if (data.status) {
-            setFormData(data.brandData);
-          }
-        });
-    } catch (error) {
-      console.log(
-        "Registration.tsx / error / 278 -------------------  ",
-        error
+        }
       );
+
+      const data = response.data.data;
+      console.log("Application details loaded:", data);
+
+      if (data.status) {
+        setFormData(data.brandData);
+      }
+    } catch (error) {
+      console.error("Error loading application details:", error);
     }
   };
 
   useEffect(() => {
-    console.log("Registration.tsx -------------------------- >  317  ");
     getApplicationDetails();
   }, []);
+
+  // Helper function to check if submit button should be disabled
+  const isSubmitDisabled = (): boolean => {
+    return !validateGSTINAndCIN();
+  };
 
   return (
     <div className="space-y-8">
@@ -423,7 +423,11 @@ const Registration: React.FC = () => {
           }))
         }
         showValidate={submitReview}
-        validateStatus={!formErrors.taxInformation}
+        validateStatus={
+          (!formErrors.taxInformation ||
+          Object.keys(formErrors.taxInformation).length === 0) &&
+          validateGSTINAndCIN()
+        }
         errors={formErrors.taxInformation}
       />
 
@@ -466,8 +470,9 @@ const Registration: React.FC = () => {
               {
                 name: "Tax information",
                 status:
-                  !formErrors.taxInformation ||
-                  Object.keys(formErrors.taxInformation).length === 0,
+                  (!formErrors.taxInformation ||
+                  Object.keys(formErrors.taxInformation).length === 0) &&
+                  validateGSTINAndCIN(), // Also check GSTIN and CIN validity
               },
               {
                 name: "Warehouse information",
@@ -502,17 +507,50 @@ const Registration: React.FC = () => {
           </div>
         )}
 
+        {/* Display GSTIN/CIN validation status */}
+        {/* {submitReview && (
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2">
+              {validateGSTINAndCIN() ? (
+                <>
+                  <CheckCircleIcon weight="fill" className="text-green-500 w-5 h-5" />
+                  <span className="text-green-700 font-medium">
+                    GSTIN and CIN are valid
+                  </span>
+                </>
+              ) : (
+                <>
+                  <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
+                  <span className="text-red-700 font-medium">
+                    Please enter valid GSTIN and CIN numbers
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        )} */}
+
         {/* Footer buttons */}
         <div className="flex gap-3 pt-4">
           <button
-            className="bg-[#E8E8E8] rounded-full p-3  text-black border-none "
+            className="bg-[#E8E8E8] rounded-full p-3 text-black border-none cursor-pointer hover:bg-gray-300 transition-all duration-300"
             onClick={() => handleSubmit(true)}
           >
             Save Draft
           </button>
           <button
-            className="bg-black rounded-full  p-3 text-white border-none cursor-pointer hover:bg-[#000] hover:text-[#ffb300] transition-all duration-300"
+            className={`rounded-full p-3 text-white border-none transition-all duration-300 ${
+              isSubmitDisabled()
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-black cursor-pointer hover:bg-gray-800 hover:text-[#ffb300]"
+            }`}
             onClick={() => handleSubmit(false)}
+            disabled={isSubmitDisabled()}
+            title={
+              isSubmitDisabled()
+                ? "Please enter valid GSTIN and CIN numbers to submit"
+                : "Submit form for review"
+            }
           >
             Submit to Review
           </button>

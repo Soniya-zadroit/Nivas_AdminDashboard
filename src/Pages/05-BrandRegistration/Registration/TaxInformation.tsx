@@ -40,12 +40,28 @@ const TaxInformation: React.FC<TaxInformationProps> = ({
     return cinRegex.test(cin);
   };
 
+  // Enhanced validation status that includes GSTIN and CIN format validation
+  const getValidationStatus = (): boolean => {
+    if (!showValidate) return true;
+    
+    // Check for form errors first
+    const hasFormErrors = errors && Object.keys(errors).length > 0;
+    if (hasFormErrors) return false;
+    
+    // Check if GSTIN and CIN are valid
+    const isGSTINValid = value.gstinNumber ? validateGSTIN(value.gstinNumber) : false;
+    const isCINValid = value.cinNumber ? validateCIN(value.cinNumber) : false;
+    
+    // All fields must be valid
+    return validateStatus && isGSTINValid && isCINValid;
+  };
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Tax Information</h3>
         {showValidate &&
-          (validateStatus ? (
+          (getValidationStatus() ? (
             <CheckCircleIcon weight="fill" className="text-green-500 w-5 h-5" />
           ) : (
             <XCircleIcon weight="fill" className="text-red-500 w-5 h-5" />
@@ -169,17 +185,17 @@ const TaxInformation: React.FC<TaxInformationProps> = ({
       </div> */}
 
       {/* Validation Summary */}
-      {showValidate && !validateStatus && (
+      {showValidate && !getValidationStatus() && (
         <div className="w-fit">
           <MissingInfoAlertCount count={Object.keys(errors || {}).length} />
         </div>
       )}
 
-      {showValidate && !validateStatus && (
+      {/* {showValidate && !getValidationStatus() && (
         <div className="w-fit">
           <MissingInfoAlertDocuments />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

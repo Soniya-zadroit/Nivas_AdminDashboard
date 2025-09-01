@@ -99,7 +99,7 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Stepper Navigation - Only show on brand registration page */}
-      {isBrandRegistrationPage && stepperContext && (
+      {/* {isBrandRegistrationPage && stepperContext && (
         <div className="flex flex-col gap-2 mt-4">
           <button
             onClick={stepperContext.goToPreviousStep}
@@ -116,7 +116,7 @@ export const Sidebar: React.FC = () => {
             Next
           </button>
         </div>
-      )}
+      )} */}
       <div className="mt-4 flex flex-col gap-2 mb-5 px-4 py-2">
         <p className="text-[17px] font-semibold ">Contact us:</p>
         <p className="flex items-center gap-2 text-[14px]">
